@@ -1,0 +1,55 @@
+.scroll-chatlist .viewport{
+    -fx-background-color:#353535;
+    background-color: #353535;
+}
+
+.scroll-bar:vertical .track{
+    -fx-background-color: #353535;
+    background-color: #353535;
+    -fx-border-color :transparent;
+    border-color: transparent;
+    -fx-background-radius : 0.0em;
+    -fx-border-radius :2.0em;
+    border-radius: 2.0em;
+}
+
+.scroll-bar:vertical .increment-button ,
+.scroll-bar:vertical .decrement-button {
+    -fx-background-color :transparent;
+    background-color: transparent;
+    -fx-background-radius : 0.0em;
+    -fx-padding :0.0 10.0 0.0 0.0;
+    padding :0.0 10.0 0.0 0.0;
+
+}
+
+ .scroll-bar .increment-arrow,
+ .scroll-bar .decrement-arrow{
+    -fx-shape : " ";    
+    -fx-padding :0.15em 0.0;
+    padding :0.15em 0.0;
+}
+
+ .scroll-bar:vertical .increment-arrow,
+ .scroll-bar:vertical .decrement-arrow{
+    -fx-shape : " ";    
+    -fx-padding :0.0 0.15em;
+    padding :0.0 0.15em;
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-color :derive(white,90.0%);
+    background-color :derive(white,90.0%);
+}
+
+.chat-info-cont{
+    -fx-background-color: #353535;
+    background-color: #353535;
+    -fx-border-color: white #353535 white #353535;
+    border-color: white #353535 white #353535;
+}
+
+.chat-info-cont:hover{
+    -fx-background-color: #353535ea;
+    background-color: #3535359b;
+}

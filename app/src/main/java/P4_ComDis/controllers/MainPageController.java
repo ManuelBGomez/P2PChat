@@ -7,14 +7,23 @@ import java.net.URL;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import P4_ComDis.ChatManagementInterface;
+import P4_ComDis.ClientManagementInterface;
 import P4_ComDis.objectimpl.ClientManagementImpl;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class MainPageController implements Initializable{
+
+    //Atributos del fxml
+    public Label userName;
+    public VBox userList;
 
     private ChatManagementInterface cm;
     private ClientManagementImpl client;
@@ -32,11 +41,11 @@ public class MainPageController implements Initializable{
             //Recuperamos la interfaz del objeto servidor:
             this.cm = (ChatManagementInterface) Naming.lookup(registryURL);
             //Creamos objeto cliente:
-            this.client = new ClientManagementImpl();
-
             System.out.print("Please enter your name: ");
-            client.setClientName(br.readLine());
-
+            //Asociamos el username a la pantalla:
+            this.userName.setText(br.readLine());
+            this.client = new ClientManagementImpl(this, this.userName.getText());
+    
             //Le registramos en el chat:
             cm.registerInChat(client);
         } catch (NotBoundException | IOException e) {
@@ -63,5 +72,26 @@ public class MainPageController implements Initializable{
             System.out.println("Unregistered from chat succesfully");
             System.exit(0);
         });
+    }
+
+
+    public void updateUserList(List<ClientManagementInterface> connectedClients) {
+        //Vaciamos el contenido del scrollpane y vamos asignando nuevos elementos con los nuevos usuarios:
+        try {
+            userList.getChildren().clear();
+            for(ClientManagementInterface client: connectedClients){
+                System.out.println(connectedClients.size());
+                //Asignamos ubicación (el fxml del contenedor de la información del chat):
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ChatInfoContainer.fxml"));
+                //Lo añadimos al listado de usuarios:
+                userList.getChildren().add(loader.load());
+                //Recuperamos el controlador y le asignamos la interfaz del cliente y la referencia de este controlador:
+                loader.<ChatInfoContainerController>getController().setClientImpl(client).setParentController(this);
+            }
+        } catch(Exception ex) {
+            //Si se captura una excepción, se avisa de ello:
+            System.out.println("Error loading chat info: " + ex.getMessage());
+            ex.printStackTrace();
+        }
     }
 }

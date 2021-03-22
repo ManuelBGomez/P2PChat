@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
@@ -10,23 +12,31 @@
 
 <GridPane alignment="CENTER" gridLinesVisible="true" minHeight="720.0" minWidth="1280.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="P4_ComDis.controllers.MainPageController">
    <children>
-      <VBox alignment="TOP_CENTER" maxWidth="300.0" minHeight="720.0" minWidth="300.0" prefWidth="300.0" style="-fx-background-color: #696969;" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+      <VBox alignment="TOP_CENTER" maxWidth="300.0" minWidth="300.0" prefWidth="300.0" style="-fx-background-color: #353535;" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
          <children>
-            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: #696969; -fx-border-color: #696969 #696969 black #696969;">
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" style="-fx-border-color: #353535 #353535 white #353535;">
                <children>
-                  <Label text="NOMBRE" textFill="WHITE">
+                  <Label fx:id="userName" text="NOMBRE" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="25.0" />
                      </font>
                   </Label>
                </children>
             </HBox>
+            <ScrollPane hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" styleClass="scroll-chatlist" stylesheets="@../css/style.css" VBox.vgrow="ALWAYS">
+              <content>
+                <AnchorPane maxWidth="300.0" minWidth="300.0" prefWidth="300.0">
+                     <children>
+                        <VBox fx:id="userList" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </children></AnchorPane>
+              </content>
+            </ScrollPane>
          </children>
       </VBox>
-      <HBox minHeight="720.0" minWidth="980.0" style="-fx-background-color: red;" GridPane.columnIndex="2" GridPane.columnSpan="2147483647" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
+      <VBox style="-fx-background-color: #808080;" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
    </children>
    <columnConstraints>
-      <ColumnConstraints />
+      <ColumnConstraints hgrow="ALWAYS" maxWidth="300.0" minWidth="300.0" prefWidth="300.0" />
       <ColumnConstraints />
       <ColumnConstraints />
    </columnConstraints>
