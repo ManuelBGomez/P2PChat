@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<GridPane alignment="CENTER" maxHeight="100.0" minHeight="100.0" minWidth="300.0" prefHeight="100.0" prefWidth="300.0" styleClass="chat-info-cont" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="P4_ComDis.controllers.ChatInfoContainerController">
+<GridPane alignment="CENTER" maxHeight="100.0" minHeight="100.0" minWidth="300.0" onMouseClicked="#chatOnClick" prefHeight="100.0" prefWidth="300.0" styleClass="chat-info-cont" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="P4_ComDis.controllers.ChatInfoContainerController">
    <columnConstraints>
       <ColumnConstraints hgrow="ALWAYS" maxWidth="300.0" minWidth="300.0" prefWidth="300.0" />
       <ColumnConstraints />

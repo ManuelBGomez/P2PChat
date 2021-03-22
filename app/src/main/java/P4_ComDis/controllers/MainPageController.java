@@ -80,7 +80,6 @@ public class MainPageController implements Initializable{
         try {
             userList.getChildren().clear();
             for(ClientManagementInterface client: connectedClients){
-                System.out.println(connectedClients.size());
                 //Asignamos ubicación (el fxml del contenedor de la información del chat):
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ChatInfoContainer.fxml"));
                 //Lo añadimos al listado de usuarios:

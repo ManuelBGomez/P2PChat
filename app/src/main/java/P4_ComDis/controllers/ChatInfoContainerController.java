@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 import P4_ComDis.ClientManagementInterface;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 
 public class ChatInfoContainerController implements Initializable{
 
@@ -43,4 +44,8 @@ public class ChatInfoContainerController implements Initializable{
         return this;
     }
     
+    public void handleOnMouseClicked(MouseEvent event){
+        System.out.println("Pulsado chat!");
+    }
+
 }

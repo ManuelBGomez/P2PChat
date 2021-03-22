@@ -3,6 +3,13 @@
     background-color: #353535;
 }
 
+.scroll-chat .viewport {
+    -fx-background-image: url("../img/chatBg.jpg");
+    background-image: url("../img/chatBg.jpg");
+    -fx-background-size: cover;
+    background-size: cover;
+}
+
 .scroll-bar:vertical .track{
     -fx-background-color: #353535;
     background-color: #353535;
