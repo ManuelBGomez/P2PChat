@@ -16,7 +16,7 @@ public class ChatInfoContainerController implements Initializable{
 
     //Atributos privados:
     private MainPageController parentController;
-    private ClientManagementInterface clientImpl;
+    private ClientManagementInterface clientInt;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -24,12 +24,12 @@ public class ChatInfoContainerController implements Initializable{
     }
 
     public ClientManagementInterface getClientImpl() {
-        return clientImpl;
+        return clientInt;
     }
 
-    public ChatInfoContainerController setClientImpl(ClientManagementInterface client) throws RemoteException {
+    public ChatInfoContainerController setClientInt(ClientManagementInterface client) throws RemoteException {
         //Asociamos valores:
-        this.clientImpl = client;
+        this.clientInt = client;
         //A mayores, ponemos en la etiqueta el nombre del usuario:
         chatName.setText(client.getClientName());
         return this;
@@ -44,8 +44,9 @@ public class ChatInfoContainerController implements Initializable{
         return this;
     }
     
-    public void handleOnMouseClicked(MouseEvent event){
-        System.out.println("Pulsado chat!");
+    public void chatOnClick(MouseEvent event){
+        //Se cargará la pantalla de chat en la parte derecha:
+        parentController.putChatScreen(clientInt);
     }
 
 }

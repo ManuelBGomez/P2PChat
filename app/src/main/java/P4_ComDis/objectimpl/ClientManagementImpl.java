@@ -37,5 +37,16 @@ public class ClientManagementImpl extends UnicastRemoteObject implements ClientM
     public void setClientName(String clientName) {
         this.clientName = clientName;
     }
+
+    @Override
+    public void sendMessage(String message, ClientManagementInterface clientInt, String time) throws RemoteException {
+        Platform.runLater(()->{
+            try {
+                controller.loadRecievedMessage(message, clientInt, time);
+            } catch (RemoteException e) {
+                System.out.println("Error on message load: " + e.getMessage());
+            }
+        });
+    }
     
 }

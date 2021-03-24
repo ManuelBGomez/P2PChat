@@ -33,7 +33,7 @@
             </ScrollPane>
          </children>
       </VBox>
-      <VBox style="-fx-background-color: #808080;" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
+      <VBox fx:id="rightBox" style="-fx-background-color: #808080;" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
    </children>
    <columnConstraints>
       <ColumnConstraints hgrow="ALWAYS" maxWidth="300.0" minWidth="300.0" prefWidth="300.0" />

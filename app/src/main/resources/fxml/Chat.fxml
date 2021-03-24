@@ -15,13 +15,13 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<GridPane alignment="CENTER" gridLinesVisible="true" minHeight="720.0" minWidth="980.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="P4_ComDis.controllers.MainPageController">
+<GridPane alignment="CENTER" gridLinesVisible="true" minHeight="720.0" minWidth="980.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="P4_ComDis.controllers.ChatController">
    <children>
       <VBox style="-fx-background-color: #808080;" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
          <children>
-            <HBox alignment="CENTER_LEFT" prefHeight="75.0" prefWidth="200.0" style="-fx-background-color: #393939;">
+            <HBox alignment="CENTER_LEFT" maxHeight="75.0" minHeight="75.0" prefHeight="75.0" prefWidth="200.0" style="-fx-background-color: #393939;">
                <children>
-                  <Label text="Nombre" textFill="WHITE">
+                  <Label fx:id="nameTag" text="Nombre" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="22.0" />
                      </font>
@@ -31,24 +31,30 @@
                   <Insets left="20.0" />
                </padding>
             </HBox>
-            <ScrollPane hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" styleClass="scroll-chat" stylesheets="@../css/style.css" VBox.vgrow="ALWAYS">
+            <ScrollPane fx:id="scrollChatContent" fitToWidth="true" hbarPolicy="NEVER" styleClass="scroll-chat" stylesheets="@../css/style.css" VBox.vgrow="ALWAYS">
               <content>
-                <AnchorPane />
+                <AnchorPane styleClass="chat-content" stylesheets="@../css/style.css">
+                     <children>
+                        <VBox fx:id="vBoxMessages" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding></VBox>
+                     </children></AnchorPane>
               </content>
             </ScrollPane>
-            <HBox alignment="CENTER_LEFT" prefHeight="75.0" prefWidth="200.0" style="-fx-background-color: #393939;">
+            <HBox alignment="CENTER_LEFT" maxHeight="75.0" minHeight="75.0" prefHeight="75.0" prefWidth="200.0" style="-fx-background-color: #393939;">
                <padding>
                   <Insets left="20.0" right="20.0" />
                </padding>
                <children>
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: white;" HBox.hgrow="ALWAYS">
                      <children>
-                        <TextField prefHeight="47.0" prefWidth="940.0" promptText="Escribe un mensaje..." style="-fx-border-color: white; -fx-background-color: white;" HBox.hgrow="ALWAYS">
+                        <TextField fx:id="messageText" prefHeight="47.0" prefWidth="940.0" promptText="Escribe un mensaje..." style="-fx-border-color: white; -fx-background-color: white;" HBox.hgrow="ALWAYS">
                            <font>
                               <Font size="18.0" />
                            </font>
                         </TextField>
-                        <ImageView fitHeight="40.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="40.0" fitWidth="35.0" onMouseClicked="#btnSendOnClick" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../img/chatSendBtn.png" />
                            </image>

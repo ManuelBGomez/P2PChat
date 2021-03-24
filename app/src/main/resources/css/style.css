@@ -1,6 +1,13 @@
 .scroll-chatlist .viewport{
     -fx-background-color:#353535;
     background-color: #353535;
+    -fx-border-color: transparent;
+    border-color: transparent;
+}
+
+.scroll-chatlist{
+    -fx-background-color: transparent;
+    background-color: transparent;
 }
 
 .scroll-chat .viewport {
@@ -57,6 +64,12 @@
 }
 
 .chat-info-cont:hover{
-    -fx-background-color: #353535ea;
-    background-color: #3535359b;
+    -fx-background-color: #353535c2;
+    background-color: #353535c2;
+}
+
+.message-container{
+    -fx-background-color: #88ff9f;
+    background-color: #88ff9f;
+    -fx-background-radius: 10px 0px 10px 10px;
 }

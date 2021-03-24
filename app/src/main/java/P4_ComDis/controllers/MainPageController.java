@@ -16,6 +16,7 @@ import P4_ComDis.objectimpl.ClientManagementImpl;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -24,10 +25,12 @@ public class MainPageController implements Initializable{
     //Atributos del fxml
     public Label userName;
     public VBox userList;
+    public VBox rightBox;
 
     private ChatManagementInterface cm;
-    private ClientManagementImpl client;
+    private ClientManagementInterface client;
     private Stage primaryStage;
+    private ChatController controllerChat;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -85,12 +88,42 @@ public class MainPageController implements Initializable{
                 //Lo añadimos al listado de usuarios:
                 userList.getChildren().add(loader.load());
                 //Recuperamos el controlador y le asignamos la interfaz del cliente y la referencia de este controlador:
-                loader.<ChatInfoContainerController>getController().setClientImpl(client).setParentController(this);
+                loader.<ChatInfoContainerController>getController().setClientInt(client).setParentController(this);
             }
         } catch(Exception ex) {
             //Si se captura una excepción, se avisa de ello:
             System.out.println("Error loading chat info: " + ex.getMessage());
             ex.printStackTrace();
+        }
+    }
+
+
+    public void putChatScreen(ClientManagementInterface clientInt) {
+        try {
+            //Asignamos ubicación:
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Chat.fxml"));
+            //Recuperamos el controlador y le asignamos la interfaz. Con ello tenemos todo establecido
+            rightBox.getChildren().clear();
+            rightBox.getChildren().add(loader.load());
+            VBox.setVgrow(rightBox.getChildren().get(0), Priority.ALWAYS);
+            loader.<ChatController>getController().setClientAndSenderInt(clientInt, client);
+            //Guardamos controlador en chat privado:
+            controllerChat = loader.<ChatController>getController();
+        } catch (IOException ex){
+            System.out.println("Error loading chat screen: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+
+    public void loadRecievedMessage(String message, ClientManagementInterface clientInt, String time) throws RemoteException {
+        //Comprobamos si hay un chat abierto y si es del usuario que se pasa:
+        if(controllerChat != null && controllerChat.getClientInt().equals(clientInt)){
+            //Entonces se mete mensaje en el chat:
+            controllerChat.addMessage(message, clientInt, time, false);
+        } else {
+            //Si no, simplemente se notifica:
+            System.out.println("MENSAJE ENTRANTE DE: " + clientInt.getClientName() + "; " + message + ".");
         }
     }
 }
