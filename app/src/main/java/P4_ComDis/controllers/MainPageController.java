@@ -10,15 +10,21 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import org.controlsfx.control.Notifications;
+
 import P4_ComDis.ChatManagementInterface;
 import P4_ComDis.ClientManagementInterface;
 import P4_ComDis.objectimpl.ClientManagementImpl;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class MainPageController implements Initializable{
 
@@ -122,8 +128,19 @@ public class MainPageController implements Initializable{
             //Entonces se mete mensaje en el chat:
             controllerChat.addMessage(message, clientInt, time, false);
         } else {
-            //Si no, simplemente se notifica:
-            System.out.println("MENSAJE ENTRANTE DE: " + clientInt.getClientName() + "; " + message + ".");
+            //Si no está abierto el chat, se abrirá una notificación:
+            Image img = new Image("/img/notifIcon.png");
+            ImageView imv = new ImageView(img);
+            imv.setFitHeight(35);
+            imv.setFitWidth(35);
+            //Se emplea para ello la clase notifications:
+            Notifications notfBuilder = Notifications.create()
+                .title("Mensaje entrante")
+                .text("Recibiste un nuevo mensaje!")
+                .graphic(imv)
+                .hideAfter(Duration.seconds(5))
+                .position(Pos.BOTTOM_RIGHT);
+            notfBuilder.show();
         }
     }
 }

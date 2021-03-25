@@ -8,7 +8,7 @@ import java.rmi.registry.Registry;
 import P4_ComDis.objectimpl.ChatManagementImpl;
 
 public class Server {
-    public static void main(String[] args){
+    public static void main(String[] args) {
         try {
             //Tratamos de iniciar un registro en el puerto que corresponde (usaremos siempre el que hay por defecto):
             startRegistry();

@@ -15,6 +15,13 @@
     background-image: url("../img/chatBg.jpg");
     -fx-background-size: cover;
     background-size: cover;
+    -fx-border-color: transparent;
+    border-color: transparent;
+}
+
+.scroll-chat {
+    -fx-background-color: transparent;
+    background-color: transparent;
 }
 
 .scroll-bar:vertical .track{
