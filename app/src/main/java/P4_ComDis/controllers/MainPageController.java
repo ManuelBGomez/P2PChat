@@ -14,6 +14,7 @@ import org.controlsfx.control.Notifications;
 
 import P4_ComDis.ChatManagementInterface;
 import P4_ComDis.ClientManagementInterface;
+import P4_ComDis.model.dataClasses.User;
 import P4_ComDis.objectimpl.ClientManagementImpl;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -34,6 +35,7 @@ public class MainPageController implements Initializable{
     public VBox rightBox;
 
     private ChatManagementInterface cm;
+    private User user;
     private ClientManagementInterface client;
     private Stage primaryStage;
     private ChatController controllerChat;
@@ -50,13 +52,16 @@ public class MainPageController implements Initializable{
             //Recuperamos la interfaz del objeto servidor:
             this.cm = (ChatManagementInterface) Naming.lookup(registryURL);
             //Creamos objeto cliente:
-            System.out.print("Please enter your name: ");
+            System.out.print("Please enter your name and password: ");
             //Asociamos el username a la pantalla:
-            this.userName.setText(br.readLine());
+            this.user = new User(br.readLine(), br.readLine());
+            
+            this.userName.setText(user.getUsername());
+
             this.client = new ClientManagementImpl(this, this.userName.getText());
     
             //Le registramos en el chat:
-            cm.registerInChat(client);
+            cm.loginToChat(user, client);
         } catch (NotBoundException | IOException e) {
             System.out.println("Problem in connection with server: " + e.getMessage());
             System.exit(0);
@@ -72,13 +77,14 @@ public class MainPageController implements Initializable{
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
 
+        //Se establecen las acciones a realizar en caso de querer cerrar la aplicación:
         primaryStage.setOnCloseRequest(event -> {
             try {
-                cm.unregisterFromChat(client);
+                cm.logoutFromChat(this.user);
             } catch (RemoteException e) {
-                System.out.println("Problem when unregistering.");
+                System.out.println("Problemas al salir de la aplicación.");
             }
-            System.out.println("Unregistered from chat succesfully");
+            System.out.println("Salida correcta de la aplicación");
             System.exit(0);
         });
     }
@@ -129,16 +135,17 @@ public class MainPageController implements Initializable{
             controllerChat.addMessage(message, clientInt, time, false);
         } else {
             //Si no está abierto el chat, se abrirá una notificación:
-            Image img = new Image("/img/notifIcon.png");
+            Image img = new Image("/img/comment.png");
             ImageView imv = new ImageView(img);
-            imv.setFitHeight(35);
-            imv.setFitWidth(35);
+            imv.setFitHeight(50);
+            imv.setFitWidth(50);
             //Se emplea para ello la clase notifications:
             Notifications notfBuilder = Notifications.create()
-                .title("Mensaje entrante")
-                .text("Recibiste un nuevo mensaje!")
+                .title("Mensaje entrante de: " + clientInt.getClientName())
+                .text(message)
                 .graphic(imv)
                 .hideAfter(Duration.seconds(5))
+                .darkStyle()
                 .position(Pos.BOTTOM_RIGHT);
             notfBuilder.show();
         }

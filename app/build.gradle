@@ -30,6 +30,7 @@ dependencies {
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:29.0-jre'
     implementation 'org.controlsfx:controlsfx:11.1.0'
+    implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.2'
 }
 
 application {

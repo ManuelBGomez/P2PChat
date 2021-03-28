@@ -1,0 +1,47 @@
+package P4_ComDis.model.dataClasses;
+
+import java.io.Serializable;
+
+public class User implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private String username;
+    private String password;
+    private boolean connected;
+    
+    public User(String username, String password, boolean connected) {
+        this.username = username;
+        this.password = password;
+        this.connected = connected;
+    }
+    
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+    
+    public boolean isConnected() {
+        return connected;
+    }
+    
+    public void setConnected(boolean connected) {
+        this.connected = connected;
+    }
+    
+    public String getPassword() {
+        return password;
+    }
+    
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+
+}

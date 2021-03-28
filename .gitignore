@@ -3,3 +3,9 @@
 
 # Ignore Gradle build output directory
 build
+
+# Ignore baseDatos.properties
+baseDatos.properties
+
+# Ignore chatDB.session.sql
+chatDB.session.sql

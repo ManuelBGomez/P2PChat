@@ -1,5 +1,6 @@
 package P4_ComDis;
 
+import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -17,7 +18,7 @@ public class Server {
             String registryURL = "rmi://localhost:1099/chatManager";
             Naming.rebind(registryURL, cm);
             System.out.println("Listening on port 1099");
-        } catch (Exception ex) {
+        } catch (RemoteException | MalformedURLException ex) {
             System.out.println("Error while starting chat server: " + ex.getMessage());
             System.exit(0);
         }
