@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -23,6 +26,32 @@
                   </Label>
                </children>
             </HBox>
+            <HBox alignment="CENTER" maxHeight="100.0" maxWidth="300.0" prefHeight="100.0" prefWidth="300.0" spacing="20.0" styleClass="friendship-btn" stylesheets="@../css/style.css">
+               <children>
+                  <HBox alignment="CENTER" maxWidth="250.0" prefHeight="100.0" prefWidth="250.0" spacing="20.0" styleClass="friendship-btn-det" stylesheets="@../css/style.css">
+                     <children>
+                        <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../img/together.png" />
+                           </image>
+                        </ImageView>
+                        <Label text="Amistades" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold" size="20.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+               </children>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </HBox>
+            <Label prefHeight="48.0" prefWidth="219.0" text="Amigos conectados" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Label>
             <ScrollPane hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" styleClass="scroll-chatlist" stylesheets="@../css/style.css" VBox.vgrow="ALWAYS">
               <content>
                 <AnchorPane maxWidth="300.0" minWidth="300.0" prefWidth="300.0">

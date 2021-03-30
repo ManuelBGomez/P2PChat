@@ -25,7 +25,7 @@
    <children>
       <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0" style="-fx-background-color: #353535;" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
          <children>
-            <Label prefHeight="84.0" prefWidth="350.0" text="Introduce tus credenciales" textAlignment="CENTER" textFill="WHITE" wrapText="true">
+            <Label alignment="CENTER" prefHeight="84.0" prefWidth="350.0" text="Introduce tus credenciales" textAlignment="CENTER" textFill="WHITE" wrapText="true">
                <font>
                   <Font name="System Bold" size="25.0" />
                </font>
@@ -40,7 +40,7 @@
                   <Font size="18.0" />
                </font>
             </PasswordField>
-            <Label fx:id="labelError" maxWidth="300.0" minWidth="300.0" prefHeight="37.0" prefWidth="300.0" text="El usuario no existe" textAlignment="CENTER" textFill="RED" visible="false" wrapText="true">
+            <Label fx:id="labelError" alignment="CENTER" maxWidth="300.0" minWidth="300.0" prefHeight="37.0" prefWidth="300.0" text="El usuario no existe" textAlignment="CENTER" textFill="RED" visible="false">
                <font>
                   <Font name="System Bold" size="20.0" />
                </font>
