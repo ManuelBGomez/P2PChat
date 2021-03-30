@@ -2,7 +2,7 @@ package P4_ComDis;
 
 import java.net.URL;
 
-import P4_ComDis.controllers.MainPageController;
+import P4_ComDis.controllers.AccessController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -16,18 +16,18 @@ public class Client extends Application{
      */
     @Override
     public void start(Stage primaryStage) throws Exception{
-        URL fxmlLocation = getClass().getResource("/fxml/MainPage.fxml");
+        URL fxmlLocation = getClass().getResource("/fxml/Access.fxml");
         //Cargamos el fichero fxml que se mostrará en la ventana:
         FXMLLoader root = new FXMLLoader(fxmlLocation);
         //Establecemos título sobre la ventana:
         primaryStage.setTitle("Chat");
         //Establecemos parámetros de la escena: el fichero fxml cargado y las dimensiones.
-        primaryStage.setScene(new Scene(root.load(), 1280, 720));
+        primaryStage.setScene(new Scene(root.load(), 350, 500));
         //Definimos dimensiones mínimas:
-        primaryStage.setMinHeight(720);
-        primaryStage.setMinWidth(1280);
+        primaryStage.setMinHeight(500);
+        primaryStage.setMinWidth(350);
         //Asignamos primarystage:
-        root.<MainPageController>getController().setPrimaryStage(primaryStage);
+        root.<AccessController>getController().setPrimaryStage(primaryStage);
         //Mostramos la pantalla:
         primaryStage.show();
     }

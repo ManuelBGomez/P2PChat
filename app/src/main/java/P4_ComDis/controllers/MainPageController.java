@@ -1,11 +1,7 @@
 package P4_ComDis.controllers;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
-import java.rmi.Naming;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -14,6 +10,7 @@ import org.controlsfx.control.Notifications;
 
 import P4_ComDis.ChatManagementInterface;
 import P4_ComDis.ClientManagementInterface;
+import P4_ComDis.aux.Dialogs;
 import P4_ComDis.model.dataClasses.User;
 import P4_ComDis.objectimpl.ClientManagementImpl;
 import javafx.fxml.FXMLLoader;
@@ -42,47 +39,29 @@ public class MainPageController implements Initializable{
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        InputStreamReader is = new InputStreamReader(System.in);
-        BufferedReader br = new BufferedReader(is);
-
-        //Definimos la URL del registro:
-        String registryURL = "rmi://localhost:1099/chatManager";
-
-        try {
-            //Recuperamos la interfaz del objeto servidor:
-            this.cm = (ChatManagementInterface) Naming.lookup(registryURL);
-            //Creamos objeto cliente:
-            System.out.print("Please enter your name and password: ");
-            //Asociamos el username a la pantalla:
-            this.user = new User(br.readLine(), br.readLine());
-            
-            this.userName.setText(user.getUsername());
-
-            this.client = new ClientManagementImpl(this, this.userName.getText());
-    
-            //Le registramos en el chat:
-            cm.loginToChat(user, client);
-        } catch (NotBoundException | IOException e) {
-            System.out.println("Problem in connection with server: " + e.getMessage());
-            System.exit(0);
-        }
+        
     }
 
-
-    public Stage getPrimaryStage() {
-        return primaryStage;
-    }
-
-
-    public void setPrimaryStage(Stage primaryStage) {
+    public void setValues(Stage primaryStage, ClientManagementImpl clientInfo, User user, ChatManagementInterface cm) {
+        //Se asocian los valores pertinentes:
         this.primaryStage = primaryStage;
+        this.client = clientInfo;
+        this.user = user;
+        this.cm = cm;
+
+        //Asociamos el username:
+        this.userName.setText(user.getUsername());
+
 
         //Se establecen las acciones a realizar en caso de querer cerrar la aplicación:
         primaryStage.setOnCloseRequest(event -> {
             try {
                 cm.logoutFromChat(this.user);
             } catch (RemoteException e) {
-                System.out.println("Problemas al salir de la aplicación.");
+                //Si salta una remoteException, avisamos de ella y se sale:
+                Dialogs.showError("Error", "Error en la conexión con el servidor", "Motivo: " + e.getMessage() +  ". Saliendo...");
+                e.printStackTrace();
+                System.exit(1);
             }
             System.out.println("Salida correcta de la aplicación");
             System.exit(0);

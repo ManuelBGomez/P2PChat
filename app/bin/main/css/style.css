@@ -80,3 +80,13 @@
     background-color: #88ff9f;
     -fx-background-radius: 10px 0px 10px 10px;
 }
+
+.btn-style{
+    -fx-background-color: #5c80f6;
+    background-color: #5c80f6;
+}
+
+.btn-style:hover{
+    -fx-background-color: #5c80f69d;
+    background-color: #5c80f69d;
+}
