@@ -83,7 +83,7 @@ public final class DAOUser extends AbstractDAO {
     }
     
     public void logout(User user) throws DatabaseException{
-        //Usaremos varios preparedstatement para hacer la consulta y efectuar el login:
+        //Usaremos varios preparedstatement para hacer la consulta y efectuar el logout:
         PreparedStatement stmUsers = null;
         PreparedStatement stmLogoutUser = null;
         ResultSet rsUsers;

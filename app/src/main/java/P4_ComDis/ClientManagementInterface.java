@@ -2,10 +2,14 @@ package P4_ComDis;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.List;
+import java.util.HashMap;
 
 public interface ClientManagementInterface extends Remote {
-    public void updateConnectedUsers(List<ClientManagementInterface> connectedClients) throws RemoteException;
+    public void setConnectedUsers(HashMap<String, ClientManagementInterface> connectedClients) throws RemoteException;
+
+    public void notifyConnection(ClientManagementInterface newClient) throws RemoteException;
+    
+    public void notifyDisconnection(ClientManagementInterface loggedOutClient) throws RemoteException;
 
     public String getClientName() throws RemoteException;
 

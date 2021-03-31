@@ -4,9 +4,9 @@ import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Properties;
 
-import P4_ComDis.model.dataClasses.ResultType;
 import P4_ComDis.model.dataClasses.User;
 import P4_ComDis.model.exceptions.DatabaseException;
 
@@ -69,5 +69,9 @@ public class BDFacade {
 
     public void logout(User user) throws DatabaseException{
         this.daoUser.logout(user);
+    }
+
+    public List<String> getFriendNames(String userName) {
+        return this.daoFriendship.getFriendNames(userName);
     }
 }

@@ -35,6 +35,8 @@ public class AccessController implements Initializable {
 
     //Atributos privados.
     private Stage primaryStage;
+    private MainPageController mainController;
+    private Scene nextScene;
     private ClientManagementImpl cImpl;
     private ChatManagementInterface cmInt;
 
@@ -60,15 +62,26 @@ public class AccessController implements Initializable {
         userName.textProperty().addListener(listText);
         password.textProperty().addListener(listText);
 
-        //Vamos creando ya la interfaz cliente (sin nada):
+        //Creamos ya de antemano la siguiente escena que se mostrará:
+
         try {
-            this.cImpl = new ClientManagementImpl(this, "");
+            //Todo oK: se procede a iniciar la siguiente pantalla.
+            URL fxmlLocation = getClass().getResource("/fxml/MainPage.fxml");
+            //Cargamos el fichero fxml que se mostrará en la ventana:
+            FXMLLoader root = new FXMLLoader(fxmlLocation);
+            //Establecemos parámetros de la escena: el fichero fxml cargado y las dimensiones.
+            this.nextScene = new Scene(root.load(), 1280, 720);
+
+            //Recuperamos el controlador:
+            this.mainController = root.<MainPageController>getController();
+            //Vamos creando ya la interfaz cliente (sin nada):
+            this.cImpl = new ClientManagementImpl(this.mainController, "");
             //Además, se recupera la interfaz del servidor:
             String registryURL = "rmi://localhost:1099/chatManager";
 
             //Recuperamos la interfaz del objeto servidor:
             this.cmInt = (ChatManagementInterface) Naming.lookup(registryURL);
-        } catch (RemoteException | MalformedURLException | NotBoundException e) {
+        } catch (NotBoundException | IOException e) {
             //Si no se puede, se sale directamente:
             System.out.println("Excepción recibida en inicialización:");
             e.printStackTrace();
@@ -109,26 +122,13 @@ public class AccessController implements Initializable {
                 Dialogs.showError("Error", "Error iniciando sesión", "Error en la base de datos, por favor, inténtelo de nuevo más tarde.");
                 break;
             case OK:
-                try {
-                    //Todo oK: se procede a iniciar la siguiente pantalla.
-                    URL fxmlLocation = getClass().getResource("/fxml/MainPage.fxml");
-                    //Cargamos el fichero fxml que se mostrará en la ventana:
-                    FXMLLoader root = new FXMLLoader(fxmlLocation);
-                    //Establecemos título sobre la ventana:
-                    primaryStage.setTitle("Chat");
-                    //Establecemos parámetros de la escena: el fichero fxml cargado y las dimensiones.
-                    primaryStage.setScene(new Scene(root.load(), 1280, 720));
-                    //Definimos dimensiones mínimas:
-                    primaryStage.setMinHeight(720);
-                    primaryStage.setMinWidth(1280);
-                    //Asignamos los valores pertinentes, pues a partir de ahora trabajaremos en esa pantalla:
-                    root.<MainPageController>getController().setValues(this.primaryStage, this.cImpl, user, this.cmInt);
-                } catch(IOException ex){
-                    //Ante cualquier excepción, se cierra la sesión directamente y se sale:
-                    Dialogs.showError("Error", "Error iniciando el chat", "Error iniciando la pantalla de chat, saliendo...");
-                    this.cmInt.logoutFromChat(user);
-                    System.exit(1);
-                }
+                //Establecemos parámetros de la escena (cargada ya con anterioridad)
+                primaryStage.setScene(this.nextScene);
+                //Definimos dimensiones mínimas:
+                primaryStage.setMinHeight(720);
+                primaryStage.setMinWidth(1280);
+                //Asignamos los valores pertinentes, pues a partir de ahora trabajaremos en esa pantalla:
+                this.mainController.setValues(this.primaryStage, this.cImpl, user, this.cmInt);
                 break;
             case UNAUTHORIZED:
                 //Se abre el diálogo oculto:

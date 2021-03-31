@@ -34,7 +34,9 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
             //Añadimos la interfaz del cliente si el resultado ha sido satisfactorio:
             clients.put(user.getUsername(), clientInfo);
             //Habrá que notificar al cliente de los usuarios conectados, y a todos sus amigos de la conexión:
-            System.out.println("Cliente logged in");
+            System.out.println("Client logged in");
+            //Desde aqui se procederá a la notificación:
+
             return ResultType.OK;
         } catch(DatabaseException ex) {
             return ex.getResultType();
