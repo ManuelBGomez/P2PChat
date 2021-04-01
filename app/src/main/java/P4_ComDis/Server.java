@@ -17,9 +17,9 @@ public class Server {
             //Definimos URL para el registro:
             String registryURL = "rmi://localhost:1099/chatManager";
             Naming.rebind(registryURL, cm);
-            System.out.println("Listening on port 1099");
+            System.out.println("Escuchando en el puerto 1099");
         } catch (RemoteException | MalformedURLException ex) {
-            System.out.println("Error while starting chat server: " + ex.getMessage());
+            System.out.println("Error iniciando chat server: " + ex.getMessage());
             System.exit(0);
         }
     }

@@ -26,8 +26,8 @@ public final class DAOFriendship extends AbstractDAO{
         //A partir de aquí, intentamos hacer la consulta:
         try {
             //Preparamos consulta (amistades en las que cualquiera de las partes sea el usuario y esté confirmada):
-            stmFriendships = con.prepareStatement("SELECT userReceiver as friend FROM friendship WHERE userSender = 'manu' and confirmedFriendship = true " +
-                                                  "UNION SELECT userSender as friend FROM friendship WHERE userReceiver = 'manu' and confirmedFriendship = true");
+            stmFriendships = con.prepareStatement("SELECT userReceiver as friend FROM friendship WHERE userSender = ? and confirmedFriendship = true " +
+                                                  "UNION SELECT userSender as friend FROM friendship WHERE userReceiver = ? and confirmedFriendship = true");
             //Completamos los parámetros con interrogantes:
             stmFriendships.setString(1, userName);
             stmFriendships.setString(2, userName);

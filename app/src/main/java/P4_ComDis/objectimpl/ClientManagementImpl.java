@@ -28,40 +28,43 @@ public class ClientManagementImpl extends UnicastRemoteObject implements ClientM
         return clientName;
     }
 
-    public void updateConnectedUsers(List<ClientManagementInterface> connectedClients) throws RemoteException {
-        /*Platform.runLater( () -> {
-            controller.updateUserList(connectedClients);
-        });*/
-    }
-
     public void setClientName(String clientName) {
         this.clientName = clientName;
     }
 
     @Override
     public void sendMessage(String message, ClientManagementInterface clientInt, String time) throws RemoteException {
-        /*Platform.runLater(()->{
+        Platform.runLater(()->{
             try {
                 controller.loadRecievedMessage(message, clientInt, time);
             } catch (RemoteException e) {
                 System.out.println("Error on message load: " + e.getMessage());
             }
-        });*/
+        });
     }
 
     @Override
     public void setConnectedUsers(HashMap<String, ClientManagementInterface> connectedClients) throws RemoteException {
-        
+        //Llamamos a este método que nos actualizará la lista de conectados:
+        Platform.runLater( () -> {
+            controller.setUserList(connectedClients);
+        });
     }
 
     @Override
     public void notifyConnection(ClientManagementInterface newClient) throws RemoteException {
-        
+        //Llamamos a este método que nos actualizará la lista de conectados:
+        Platform.runLater( () -> {
+            controller.updateNewConnection(newClient);
+        });
     }
 
     @Override
     public void notifyDisconnection(ClientManagementInterface loggedOutClient) throws RemoteException {
-        
+        //Llamamos a este método que nos actualizará la lista de conectados:
+        Platform.runLater( () -> {
+            controller.updateNewDisconnect(loggedOutClient);
+        });
     }
     
 }
