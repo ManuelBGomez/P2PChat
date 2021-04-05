@@ -3,7 +3,6 @@ package P4_ComDis.objectimpl;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
-import java.util.List;
 
 import P4_ComDis.ClientManagementInterface;
 import P4_ComDis.controllers.MainPageController;

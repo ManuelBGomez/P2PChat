@@ -12,7 +12,7 @@ public interface ChatManagementInterface extends Remote {
 
     public void logoutFromChat(User user) throws RemoteException;
 
-    public void registerInChat(ClientManagementInterface clientInfo) 
+    public ResultType registerInChat(User user, ClientManagementInterface clientInfo) 
         throws RemoteException;
 
     public void unregisterFromChat(ClientManagementInterface clientInfo) throws RemoteException;

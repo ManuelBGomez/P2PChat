@@ -132,6 +132,7 @@ public class AccessController implements Initializable {
                 break;
             case UNAUTHORIZED:
                 //Se abre el diálogo oculto:
+                labelError.setText("Credenciales erróneas");
                 labelError.setVisible(true);
                 break;
             default:
@@ -146,5 +147,50 @@ public class AccessController implements Initializable {
             System.exit(1);
         }
         
+    }
+
+    public void btnRegisterOnClick(ActionEvent event){
+        //Se hace el registro, haciendo la petición al servidor:
+        //Creamos el usuario a pasar al servidor:
+        User user = new User(userName.getText(), password.getText());
+
+        //Se establece el nombre del cliente en la interfaz del cliente (será la referencia del nombre que tendrán los
+        //demás clientes con los que nos comuniquemos)
+        this.cImpl.setClientName(user.getUsername());
+
+        //Llamamos al método necesario, capturando excepción remota:
+        try {
+            //Se hace el login y se evalúa el resultado obtenido:
+            switch(cmInt.registerInChat(user, this.cImpl)){
+            case DATABASE_ERROR:
+                //Error en la DB, se avisa (y se oculta la label de error por si se abriese antes):
+                labelError.setVisible(false);
+                Dialogs.showError("Error", "Error en registro", "Error en la base de datos, por favor, inténtelo de nuevo más tarde.");
+                break;
+            case OK:
+                //Establecemos parámetros de la escena (cargada ya con anterioridad)
+                primaryStage.setScene(this.nextScene);
+                //Definimos dimensiones mínimas:
+                primaryStage.setMinHeight(720);
+                primaryStage.setMinWidth(1280);
+                //Asignamos los valores pertinentes, pues a partir de ahora trabajaremos en esa pantalla:
+                this.mainController.setValues(this.primaryStage, this.cImpl, user, this.cmInt);
+                break;
+            case UNAUTHORIZED:
+                //Se abre el diálogo oculto:
+                labelError.setText("Usuario ya existente");
+                labelError.setVisible(true);
+                break;
+            default:
+                //No hay más casos que pueden salir.
+                break;
+                
+            }
+        } catch (RemoteException e) {
+            //Si salta una remoteException, avisamos de ella y se sale:
+            Dialogs.showError("Error", "Error en la conexión con el servidor", "Motivo: " + e.getMessage() +  ". Saliendo...");
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 }

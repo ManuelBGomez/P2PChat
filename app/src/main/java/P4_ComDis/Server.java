@@ -19,7 +19,7 @@ public class Server {
             Naming.rebind(registryURL, cm);
             System.out.println("Escuchando en el puerto 1099");
         } catch (RemoteException | MalformedURLException ex) {
-            System.out.println("Error iniciando chat server: " + ex.getMessage());
+            System.out.println("Error iniciando servidor del chat: " + ex.getMessage());
             System.exit(0);
         }
     }

@@ -71,6 +71,11 @@ public class BDFacade {
         this.daoUser.logout(user);
     }
 
+    public void register(User user) throws DatabaseException{
+        //Llamamos al método de registro:
+        this.daoUser.register(user);
+    }
+
     public List<String> getFriendNames(String userName) {
         return this.daoFriendship.getFriendNames(userName);
     }

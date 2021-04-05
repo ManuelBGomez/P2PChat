@@ -24,6 +24,9 @@ public final class DAOUser extends AbstractDAO {
         //Recuperamos la conexión
         Connection con = super.getConnection();
 
+        //Para saber si se ha podido hacer el login correctamente, mantenemos una variable resulttype (por defecto con un error de la DB):
+        ResultType res = ResultType.DATABASE_ERROR;
+
         //A partir de aquí, intentamos hacer la consulta:
         try {
             //Preparamos consulta:
@@ -33,7 +36,7 @@ public final class DAOUser extends AbstractDAO {
             stmUsers.setString(2, user.getPassword());
 
             //Ejecutamos la consulta:
-            rsUsers = stmUsers.executeQuery();;
+            rsUsers = stmUsers.executeQuery();
             
             //Si hay resultado, estableceremos que el usuario pasa a estar conectado:
             if(rsUsers.next()){
@@ -51,11 +54,13 @@ public final class DAOUser extends AbstractDAO {
                     stmUpdateUsers.setString(1, user.getUsername());
                     //Ejecutamos la actualización:
                     stmUpdateUsers.executeUpdate();
+                    //Marcamos el result type como OK:
+                    res = ResultType.OK;
                 } else {
-                    throw new DatabaseException(ResultType.ALREADY_CONNECTED, "Usuario ya conectado");
+                    res = ResultType.ALREADY_CONNECTED;
                 }
             } else {
-                throw new DatabaseException(ResultType.UNAUTHORIZED, "Credenciales erróneas");
+                res = ResultType.UNAUTHORIZED;
             }
 
             //Hecho todo esto, haremos el commit:
@@ -80,6 +85,17 @@ public final class DAOUser extends AbstractDAO {
                 System.out.println("Imposible cerrar los cursores");
             }
         }
+
+        //Comprobamos el resulttype:
+        switch(res){
+            case ALREADY_CONNECTED:
+                throw new DatabaseException(ResultType.ALREADY_CONNECTED, "Usuario ya conectado");
+            case UNAUTHORIZED:
+                throw new DatabaseException(ResultType.UNAUTHORIZED, "Credenciales de usuario incorrectas");
+            default:
+                //Para el resto de valores no  se hace nada especial.
+                break;
+        }
     }
     
     public void logout(User user) throws DatabaseException{
@@ -89,6 +105,8 @@ public final class DAOUser extends AbstractDAO {
         ResultSet rsUsers;
         //Recuperamos la conexión
         Connection con = super.getConnection();
+        //Utilizamos un booleano como referencia de si hay problemas:
+        boolean valid = false;
 
         //A partir de aquí, intentamos hacer la consulta:
         try {
@@ -109,8 +127,7 @@ public final class DAOUser extends AbstractDAO {
                 stmLogoutUser.setString(1, user.getUsername());
                 //Ejecutamos la actualización:
                 stmLogoutUser.executeUpdate();
-            } else {
-                throw new DatabaseException(ResultType.UNAUTHORIZED, "Usuario o contraseña inválidos");
+                valid = true;
             }
 
             //Hecho todo esto, haremos el commit:
@@ -123,7 +140,7 @@ public final class DAOUser extends AbstractDAO {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            //Se imprime el stack trace:
+            //Enviamos excepción:
             throw new DatabaseException(ResultType.DATABASE_ERROR, ex.getMessage());
         } finally {
             //Para terminar, se cierran los statements (si es posible):
@@ -133,6 +150,73 @@ public final class DAOUser extends AbstractDAO {
             } catch (SQLException e){
                 System.out.println("Imposible cerrar los cursores");
             }
+        }
+        if(!valid) {
+            throw new DatabaseException(ResultType.UNAUTHORIZED, "Usuario o contraseña inválidos");
+        }
+    }
+
+    public void register(User user) throws DatabaseException{
+        //Usaremos varios preparedstatement para la consulta:
+        PreparedStatement stmUsers = null;
+        PreparedStatement stmRegister = null;
+
+        ResultSet rsUser;
+        boolean valid = false;
+
+        //Recuperamos la conexión:
+        Connection con = super.getConnection();
+
+        //Intentaremos registrar al usuario, verificando antes que no haya otro usuario con el mismo username:
+        try{
+            //Preparamos la consulta de existencia del usuario:
+            stmUsers = con.prepareStatement("SELECT * FROM user WHERE lower(userName) = lower(?)");
+            //Completamos campos:
+            stmUsers.setString(1, user.getUsername());
+
+            //Ejecutamos la consulta:
+            rsUser = stmUsers.executeQuery();
+
+            //A continuación, comprobamos que no se han devuelto resultados:
+            if(!rsUser.next()){
+                //En ese caso, podemos seguir adelante.
+                //Insertamos el usuario - lo ponemos conectado porque directamente iniciaremos sesión:
+                stmRegister = con.prepareStatement("INSERT INTO user(userName, password, connected)" + 
+                " VALUES (?, sha2(?, 256), true)");
+                //Completamos campos
+                stmRegister.setString(1, user.getUsername());
+                stmRegister.setString(2, user.getPassword());
+                
+                //Hecho esto, ejecutamos la actualización:
+                stmRegister.executeUpdate();
+                //La variable que nos indica que el registro ha sido válido se pone a true para confirmarlo
+                valid = true;
+            }
+
+            //Hacemos commit:
+            con.commit();
+        } catch (SQLException ex){
+            //Tratamos de hacer el rollback:
+            try {
+                con.rollback();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            //Se envía una excepción indicando el error:
+            throw new DatabaseException(ResultType.DATABASE_ERROR, ex.getMessage());
+        } finally {
+            //Se cierran statements (si es posible):
+            try {
+                stmUsers.close();
+                if(stmRegister != null) stmRegister.close();
+            } catch(SQLException e){
+                System.out.println("Imposible cerrar los cursores");
+            }
+        }
+
+        //Si se pudo registrar, no ocurre nada. Si no, se envia una excepción:
+        if(!valid){
+            throw new DatabaseException(ResultType.UNAUTHORIZED, "Ya existe un usuario con ese nombre");
         }
     }
 }

@@ -61,21 +61,25 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
             }
         } catch(DatabaseException ex){
             //Si se genera alguna excepción (no debería) se avisaría
-            //Imaginemos, por ejemplo, que lo hace un usuario no autorizado:
+            //Imaginemos, por ejemplo, que lo hace un usuario no autorizado (esto solo ocurriría si se modificase a posta la contraseña):
             System.out.println("Problemas en el cierre de sesión: " + ex.getMessage());
         }
     }
 
     @Override
-    public void registerInChat(ClientManagementInterface clientInfo) throws RemoteException {
-        /*//Procedemos a almacenar el nuevo valor (si no lo estaba antes):
-        if(!clients.contains(clientInfo)){
-            //Lo añadimos:
-            clients.add(clientInfo);
+    public ResultType registerInChat(User user, ClientManagementInterface clientInfo) throws RemoteException {
+        //Trataremos de registrar al usuario:
+        try {
+            bdFacade.register(user);
+            //Si el método finaliza correctamente, entonces hacemos las mismas acciones que con un usuario normal:
+            //Añadimos la interfaz del cliente si el resultado ha sido satisfactorio:
+            clients.put(user.getUsername(), clientInfo);
+            //Eso sí, no se revisan las amistades, pues la cuenta acaba de crearse, así que no tiene sentido añadir nada.
+            return ResultType.OK;
+        } catch(DatabaseException ex) {
+            //Si hay alguna excepción se devuelve el motivo:
+            return ex.getResultType();
         }
-        //Notificamos la nueva lista a los clientes conectados:
-        this.notifyClients();
-        System.out.println("Added client and notified");*/
     }
 
     @Override
