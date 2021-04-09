@@ -79,4 +79,8 @@ public class BDFacade {
     public List<String> getFriendNames(String userName) {
         return this.daoFriendship.getFriendNames(userName);
     }
+
+    public List<String> getUserNamesByPattern(User user, String pattern){
+        return this.daoUser.getUserNamesByPattern(user, pattern);
+    }
 }

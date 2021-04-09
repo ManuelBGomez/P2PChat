@@ -26,7 +26,7 @@
                   </Label>
                </children>
             </HBox>
-            <HBox alignment="CENTER" maxHeight="100.0" maxWidth="300.0" prefHeight="100.0" prefWidth="300.0" spacing="20.0" styleClass="friendship-btn" stylesheets="@../css/style.css">
+            <HBox alignment="CENTER" maxHeight="100.0" maxWidth="300.0" onMouseClicked="#btnFriendsOnClick" prefHeight="100.0" prefWidth="300.0" spacing="20.0" styleClass="friendship-btn" stylesheets="@../css/style.css">
                <children>
                   <HBox alignment="CENTER" maxWidth="250.0" prefHeight="100.0" prefWidth="250.0" spacing="20.0" styleClass="friendship-btn-det" stylesheets="@../css/style.css">
                      <children>

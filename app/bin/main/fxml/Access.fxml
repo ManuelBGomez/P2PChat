@@ -55,7 +55,7 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Button fx:id="btnRegister" disable="true" maxHeight="50.0" minHeight="50.0" mnemonicParsing="false" prefHeight="50.0" styleClass="btn-style" stylesheets="@../css/style.css" text="Registrarse" textFill="WHITE">
+                  <Button fx:id="btnRegister" disable="true" maxHeight="50.0" minHeight="50.0" mnemonicParsing="false" onAction="#btnRegisterOnClick" prefHeight="50.0" styleClass="btn-style" stylesheets="@../css/style.css" text="Registrarse" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="16.0" />
                      </font>

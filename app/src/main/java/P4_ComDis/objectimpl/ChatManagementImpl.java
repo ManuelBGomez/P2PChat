@@ -35,7 +35,7 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
             //Añadimos la interfaz del cliente si el resultado ha sido satisfactorio:
             clients.put(user.getUsername(), clientInfo);
             //Habrá que notificar al cliente de los usuarios conectados, y a todos sus amigos de la conexión:
-            System.out.println("Cliente ha iniciado sesión");
+            System.out.println("Cliente " + user.getUsername() + " ha iniciado sesión");
             //Desde aqui se procederá a la notificación:
             this.notifyClientsOnConnect(clientInfo);
             return ResultType.OK;
@@ -55,7 +55,7 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
                 this.notifyClientsOnDisconnect(clients.get(user.getUsername()));
                 //Se elimina el cliente del hashmap:
                 clients.remove(user.getUsername());            
-                System.out.println("Cliente ha cerrado sesión");
+                System.out.println("Cliente " + user.getUsername() + " ha cerrado sesión");
             } else {
                 System.out.println("Problema en desconexión del usuario: no se encuentra.");
             }
@@ -74,6 +74,7 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
             //Si el método finaliza correctamente, entonces hacemos las mismas acciones que con un usuario normal:
             //Añadimos la interfaz del cliente si el resultado ha sido satisfactorio:
             clients.put(user.getUsername(), clientInfo);
+            System.out.println("Cliente " + user.getUsername() + " registrado");
             //Eso sí, no se revisan las amistades, pues la cuenta acaba de crearse, así que no tiene sentido añadir nada.
             return ResultType.OK;
         } catch(DatabaseException ex) {
@@ -91,6 +92,12 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
             //Si se elimina se avisa
             System.out.println("Removed client and notified");
         }*/
+    }
+
+    @Override
+    public List<String> searchFriends(User user, String pattern) throws RemoteException {
+        //Se llama al método de la DB y se devuelve el resultado. Si el usuario no fuese válido ya no se devolvería nada:
+        return bdFacade.getUserNamesByPattern(user, pattern);
     }
 
     private void notifyClientsOnConnect(ClientManagementInterface clientInfo) throws RemoteException{

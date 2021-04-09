@@ -3,7 +3,6 @@ package P4_ComDis.controllers;
 import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +22,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -67,9 +67,9 @@ public class MainPageController implements Initializable{
         this.userName.setText(user.getUsername());
 
         //Se establecen las acciones a realizar en caso de querer cerrar la aplicación:
-        primaryStage.setOnCloseRequest(event -> {
+        this.primaryStage.setOnCloseRequest(event -> {
             try {
-                cm.logoutFromChat(this.user);
+                this.cm.logoutFromChat(this.user);
             } catch (RemoteException e) {
                 //Si salta una remoteException, avisamos de ella y se sale:
                 Dialogs.showError("Error", "Error en la conexión con el servidor", "Motivo: " + e.getMessage() +  ". Saliendo...");
@@ -179,5 +179,28 @@ public class MainPageController implements Initializable{
                 .position(Pos.BOTTOM_RIGHT);
             notfBuilder.show();
         }
+    }
+
+    public void btnFriendsOnClick(MouseEvent event){
+        try {
+            //Si se pulsa este botón, abriremos la pantalla de amigos:
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Friendships.fxml"));
+            //Recuperamos el controlador y le asignamos parámetros que le serán de utilidad:
+            rightBox.getChildren().clear();
+            rightBox.getChildren().add(loader.load());
+            //Se permite crecimiento del VBox en vertical (diseño responsivo)
+            VBox.setVgrow(rightBox.getChildren().get(0), Priority.ALWAYS);
+            loader.<FriendshipsController>getController().setValues(this, this.user);
+            //Ahora mismo deja de haber un controllerChat activo, por lo que directamente se pone a null:
+            controllerChat = null;
+        } catch (IOException ex) {
+            System.out.println("Error cargando pantalla de amigos: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    public List<String> performSearch(String pattern) throws RemoteException{
+        //Hacemos la búsqueda mediante llamada al servidor y devolvemos el resultado:
+        return this.cm.searchFriends(this.user, pattern);
     }
 }

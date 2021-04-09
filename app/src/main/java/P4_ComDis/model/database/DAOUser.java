@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import P4_ComDis.model.dataClasses.ResultType;
 import P4_ComDis.model.dataClasses.User;
@@ -15,7 +17,7 @@ public final class DAOUser extends AbstractDAO {
         super(connection);
     }
 
-    public void login(User user) throws DatabaseException  {
+    public void login(User user) throws DatabaseException{
         //Usaremos varios preparedstatement para hacer la consulta y efectuar el login:
         PreparedStatement stmUsers = null;
         PreparedStatement stmUpdateUsers = null;
@@ -218,5 +220,77 @@ public final class DAOUser extends AbstractDAO {
         if(!valid){
             throw new DatabaseException(ResultType.UNAUTHORIZED, "Ya existe un usuario con ese nombre");
         }
+    }
+
+    public List<String> getUserNamesByPattern(User user, String pattern) {
+        //Usaremos varios preparedstatement para hacer la consulta de validación del usuario y hacer logout:
+        PreparedStatement stmUsers = null;
+        PreparedStatement stmSearch = null;
+        ResultSet rsUsers;
+        ResultSet rsSearch;
+        //Recuperamos la conexión
+        Connection con = super.getConnection();
+        //Creamos un arraylist vacío para contener los resultados. En principio, no tendrá nada si la consulta no
+        //se llega a hacer o si no hay resultados, y tendrá algo siempre y cuando haya resultados para la búsqueda hecha.
+        ArrayList<String> users = new ArrayList<>();
+
+        //A partir de aquí, intentamos hacer la consulta:
+        try {
+            System.out.println("Dentro");
+            //Preparamos consulta:
+            stmUsers = con.prepareStatement("SELECT * FROM user WHERE lower(userName) = lower(?) AND password = sha2(?, 256)");
+            //Completamos los parámetros con interrogantes:
+            stmUsers.setString(1, user.getUsername());
+            stmUsers.setString(2, user.getPassword());
+
+            //Ejecutamos la consulta:
+            rsUsers = stmUsers.executeQuery();;
+            
+            //Si hay resultado, el usuario existe - procedemos a realizar la consulta:
+            if(rsUsers.next()){
+                //Preparamos una nueva consulta: usuarios que sigan el patrón pero que no sean ya amigos ni sean el propio usuario que hace la búsqueda
+                stmSearch = con.prepareStatement("SELECT * FROM user WHERE lower(userName) LIKE ?  " + 
+                                "AND userName not in " +
+                                "(SELECT userReceiver as friend FROM friendship WHERE lower(userSender) = lower(?) and confirmedFriendship = true " + 
+                                "UNION " +
+                                "SELECT userSender as friend FROM friendship WHERE lower(userReceiver) = lower(?) and confirmedFriendship = true) " +
+                                "AND lower(userName) != lower(?)");
+                //Establecemos los parámetros (similitud en el patrón):
+                stmSearch.setString(1, "%" + pattern + "%");
+                stmSearch.setString(2, user.getUsername());
+                stmSearch.setString(3, user.getUsername());
+                stmSearch.setString(4, user.getUsername());
+                //Ejecutamos la consulta:
+                rsSearch = stmSearch.executeQuery();
+                while(rsSearch.next()){
+                    users.add(rsSearch.getString("userName"));
+                }
+            }
+
+            //Hecho todo esto, haremos el commit:
+            con.commit();
+
+        } catch (SQLException ex){
+            //Tratamos de hacer el rollback:
+            try {
+                con.rollback();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            //En este caso no enviamos nada, simplemente no devolveremos resultado al final.
+            ex.printStackTrace();
+        } finally {
+            //Para terminar, se cierran los statements (si es posible):
+            try {
+                stmUsers.close();
+                if(stmSearch!=null) stmSearch.close();
+            } catch (SQLException e){
+                System.out.println("Imposible cerrar los cursores");
+            }
+        }
+
+        //Devolvemos el resultado (se tendrá algo cuando la consulta tenga éxito, no habrá resultado si
+        //el usuario no es válido o si no se encuentran usuarios con el término buscado)
+        return users;
     }
 }
