@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Label?>
@@ -60,14 +61,18 @@
                         <Insets bottom="20.0" top="20.0" />
                      </padding>
                   </Label>
-                  <ScrollPane hbarPolicy="NEVER" styleClass="scroll-chatlist" stylesheets="@../css/style.css" VBox.vgrow="ALWAYS">
+                  <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" stylesheets="@../css/style.css" VBox.vgrow="ALWAYS">
                      <content>
                         <AnchorPane minWidth="980.0">
                            <children>
-                              <VBox minWidth="980.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                              <VBox fx:id="usersAddList" spacing="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                            </children>
                         </AnchorPane>
                      </content>
+                     <styleClass>
+                        <String fx:value="scroll-chatlist" />
+                        <String fx:value="req-cont" />
+                     </styleClass>
                   </ScrollPane>
                </children>
             </VBox>
@@ -81,7 +86,7 @@
                         <Insets bottom="20.0" top="20.0" />
                      </padding>
                   </Label>
-                  <ScrollPane hbarPolicy="NEVER" styleClass="scroll-chatlist" stylesheets="@../css/style.css" VBox.vgrow="ALWAYS">
+                  <ScrollPane hbarPolicy="NEVER" stylesheets="@../css/style.css" VBox.vgrow="ALWAYS">
                      <content>
                         <AnchorPane minWidth="980.0">
                            <children>
@@ -89,6 +94,10 @@
                            </children>
                         </AnchorPane>
                      </content>
+                     <styleClass>
+                        <String fx:value="scroll-chatlist" />
+                        <String fx:value="req-cont" />
+                     </styleClass>
                   </ScrollPane>
                </children>
             </VBox>

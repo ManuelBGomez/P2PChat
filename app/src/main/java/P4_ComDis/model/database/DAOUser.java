@@ -236,7 +236,6 @@ public final class DAOUser extends AbstractDAO {
 
         //A partir de aquí, intentamos hacer la consulta:
         try {
-            System.out.println("Dentro");
             //Preparamos consulta:
             stmUsers = con.prepareStatement("SELECT * FROM user WHERE lower(userName) = lower(?) AND password = sha2(?, 256)");
             //Completamos los parámetros con interrogantes:
