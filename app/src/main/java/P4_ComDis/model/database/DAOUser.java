@@ -250,9 +250,9 @@ public final class DAOUser extends AbstractDAO {
                 //Preparamos una nueva consulta: usuarios que sigan el patrón pero que no sean ya amigos ni sean el propio usuario que hace la búsqueda
                 stmSearch = con.prepareStatement("SELECT * FROM user WHERE lower(userName) LIKE ?  " + 
                                 "AND userName not in " +
-                                "(SELECT userReceiver as friend FROM friendship WHERE lower(userSender) = lower(?) and confirmedFriendship = true " + 
+                                "(SELECT userReceiver as friend FROM friendship WHERE lower(userSender) = lower(?) " + 
                                 "UNION " +
-                                "SELECT userSender as friend FROM friendship WHERE lower(userReceiver) = lower(?) and confirmedFriendship = true) " +
+                                "SELECT userSender as friend FROM friendship WHERE lower(userReceiver) = lower(?)) " +
                                 "AND lower(userName) != lower(?)");
                 //Establecemos los parámetros (similitud en el patrón):
                 stmSearch.setString(1, "%" + pattern + "%");

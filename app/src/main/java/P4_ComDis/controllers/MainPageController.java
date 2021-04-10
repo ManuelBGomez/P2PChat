@@ -45,10 +45,16 @@ public class MainPageController implements Initializable{
     private Stage primaryStage;
     //Controlador del chat abierto en un momento determinado:
     private ChatController controllerChat;
+    //Controlador de una posible pantalla de amistades abierta en un momento determinado:
+    private FriendshipsController controllerFriendships;
     //HashMap con los clientes amigos conectados:
     private HashMap<String, ClientManagementInterface> friendsConnected;
     //Lista de usuarios acompañadas de los nodos que les corresponden (se usa para controlar el listado de chats disponibles):
     private HashMap<String, Node> chatsInfo;
+    //Lista de peticiones de amistad recibidas:
+    private List<String> receivedRequests;
+    //Lista de peticiones de amistad enviadas (sin confirmar):
+    private List<String> sentRequests;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -81,9 +87,13 @@ public class MainPageController implements Initializable{
         });
     }
 
-    public void setUserList(HashMap<String, ClientManagementInterface> connectedClients) {
-        //Asignamos el listado:
+    public void setLists(HashMap<String, ClientManagementInterface> connectedClients,
+                         List<String> sentRequests,
+                         List<String> receivedRequests) {
+        //Asignamos los listados:
         this.friendsConnected = connectedClients;
+        this.receivedRequests = receivedRequests;
+        this.sentRequests = sentRequests;
         //Vaciamos el contenido del scrollpane y vamos asignando nuevos elementos con los nuevos usuarios:
         try {
             userList.getChildren().clear();
@@ -152,6 +162,8 @@ public class MainPageController implements Initializable{
             loader.<ChatController>getController().setClientAndSenderInt(clientInt, client);
             //Guardamos controlador en chat privado:
             controllerChat = loader.<ChatController>getController();
+            //Ponemos el de amistades a null (se ha cargado un chat encima):
+            controllerFriendships = null;
         } catch (IOException ex){
             System.out.println("Error cargando el chat: " + ex.getMessage());
             ex.printStackTrace();
@@ -190,7 +202,8 @@ public class MainPageController implements Initializable{
             rightBox.getChildren().add(loader.load());
             //Se permite crecimiento del VBox en vertical (diseño responsivo)
             VBox.setVgrow(rightBox.getChildren().get(0), Priority.ALWAYS);
-            loader.<FriendshipsController>getController().setValues(this, this.user);
+            controllerFriendships = loader.<FriendshipsController>getController();
+            controllerFriendships.setValues(this, this.user, this.sentRequests, this.receivedRequests);
             //Ahora mismo deja de haber un controllerChat activo, por lo que directamente se pone a null:
             controllerChat = null;
         } catch (IOException ex) {

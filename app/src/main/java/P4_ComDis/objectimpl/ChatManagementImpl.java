@@ -116,8 +116,11 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
                 clients.get(friendName).notifyConnection(clientInfo);
             }
         }
-        //Todo el hashmap obtenido se debe de pasar al usuario. Éste podrá inicializar todo ya:
-        clientInfo.setConnectedUsers(clFriends);
+
+        List<String> sentRequests = this.bdFacade.getFriendSentRequests(clientInfo.getClientName());
+        List<String> receivedRequests = this.bdFacade.getFriendRequests(clientInfo.getClientName());
+        //Toda la información obtenida se debe de pasar al usuario. Éste podrá inicializar todo ya:
+        clientInfo.setClientInfo(clFriends, sentRequests, receivedRequests);
     }
 
     private void notifyClientsOnDisconnect(ClientManagementInterface clientInfo) throws RemoteException{

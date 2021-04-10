@@ -83,4 +83,16 @@ public class BDFacade {
     public List<String> getUserNamesByPattern(User user, String pattern){
         return this.daoUser.getUserNamesByPattern(user, pattern);
     }
+
+    public void sendRequest (User user, String friendName) throws DatabaseException {
+        daoFriendship.sendRequest(user, friendName);
+    }
+
+    public List<String> getFriendRequests(String userName) {
+        return daoFriendship.getFriendRequests(userName);
+    }
+
+    public List<String> getFriendSentRequests(String userName){
+        return daoFriendship.getFriendSentRequests(userName);
+    }
 }

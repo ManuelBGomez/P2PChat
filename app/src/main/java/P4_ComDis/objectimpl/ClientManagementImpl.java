@@ -3,6 +3,7 @@ package P4_ComDis.objectimpl;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
+import java.util.List;
 
 import P4_ComDis.ClientManagementInterface;
 import P4_ComDis.controllers.MainPageController;
@@ -43,10 +44,12 @@ public class ClientManagementImpl extends UnicastRemoteObject implements ClientM
     }
 
     @Override
-    public void setConnectedUsers(HashMap<String, ClientManagementInterface> connectedClients) throws RemoteException {
-        //Llamamos a este método que nos actualizará la lista de conectados:
+    public void setClientInfo(HashMap<String, ClientManagementInterface> connectedClients,
+                              List<String> sentRequests,
+                              List<String> receivedRequests) throws RemoteException {
+        //Llamamos a este método que nos guardará las listas:
         Platform.runLater( () -> {
-            controller.setUserList(connectedClients);
+            controller.setLists(connectedClients, sentRequests, receivedRequests);
         });
     }
 

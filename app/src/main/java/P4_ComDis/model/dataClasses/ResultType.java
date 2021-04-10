@@ -4,5 +4,6 @@ public enum ResultType {
     OK,
     UNAUTHORIZED,
     ALREADY_CONNECTED,
-    DATABASE_ERROR
+    DATABASE_ERROR,
+    ALREADY_FRIENDS
 }

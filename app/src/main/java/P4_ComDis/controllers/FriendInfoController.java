@@ -6,18 +6,20 @@ import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import P4_ComDis.model.dataClasses.FriendRequestType;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 
 public class FriendInfoController implements Initializable{
 
     public Label userName;
-    public ImageView imgBtn;    
+    public ImageView imgBtnConf;
+    public ImageView imgBtnRec;
 
-    //Booleano que nos indica si se va a añadir un amigo o a cancelar una solicitud hecha a otro amigo:
-    private boolean add;
+    //Objeto FriendRequestType que nos indica el tipo de solicitud (enviada, recibida o buscada)
+    private FriendRequestType rType;
     //Referencia al controlador padre:
     private FriendshipsController controllerPrincipal;
 
@@ -26,15 +28,29 @@ public class FriendInfoController implements Initializable{
         
     }
     
-    public void setValues(String userName, boolean add, FriendshipsController controllerPrincipal){
+    public void setValues(String userName, FriendRequestType rType, FriendshipsController controllerPrincipal){
         this.userName.setText(userName);
-        this.add = add;
-        if(this.add){
-            //Si el cuadro se abre para ofrecer al usuario solicitar una nueva amistad, la imagen a mostrar es la del botón de confirmar:
-            imgBtn.setImage(new Image("/img/comprobado.png"));
-        } else {
-            //Si no (se abre para mostrar una solicitud hecha), se muestra el icono con la X:
-            imgBtn.setImage(new Image("/img/cancelar.png"));
+        this.rType = rType;
+        switch(rType){
+        case RECV:
+            //Recibida: se muestran ambos botones:
+            imgBtnConf.setVisible(true);
+            imgBtnRec.setVisible(true);
+            //El botón se pone a una distancia menor del borde derecho:
+            AnchorPane.setRightAnchor(imgBtnConf, 20.0);
+            break;
+        case SEARCH:
+            //Resultado de búsqueda para tratar de añadir amistad: sólo botón de confirmar:
+            imgBtnConf.setVisible(true);
+            imgBtnRec.setVisible(false);
+            //El botón se pone a una distancia menor del borde derecho:
+            AnchorPane.setRightAnchor(imgBtnConf, 20.0);
+            break;
+        case SENT:
+            //Solicitud enviada: se muestra sólo botón de cancelar:
+            imgBtnConf.setVisible(false);
+            imgBtnRec.setVisible(true);
+            break;
         }
         this.controllerPrincipal = controllerPrincipal;
     }

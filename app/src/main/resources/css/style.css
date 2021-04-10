@@ -122,3 +122,17 @@
     -fx-border-width: 3px 0px;
     border-width: 3px 0px;
 }
+
+.received-cont{
+    -fx-border-color: gray;
+    border-color: gray;
+    -fx-border-width: 0px 3px 0px 0px;
+    border-width: 0px 3px 0px 0px;
+}
+
+.send-cont{
+    -fx-border-color: gray;
+    border-color: gray;
+    -fx-border-width: 0px 0px 0px 3px;
+    border-width: 0px 0px 0px 3px;
+}

@@ -7,6 +7,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import P4_ComDis.model.dataClasses.ResultType;
+import P4_ComDis.model.dataClasses.User;
+import P4_ComDis.model.exceptions.DatabaseException;
+
 public final class DAOFriendship extends AbstractDAO{
 
     public DAOFriendship(Connection connection) {
@@ -20,7 +24,7 @@ public final class DAOFriendship extends AbstractDAO{
         ResultSet rsFriendships;
         //Recuperamos la conexión:
         Connection con = super.getConnection();
-        //El resultado se meterá en un array de strins:
+        //El resultado se meterá en un array de strings:
         ArrayList<String> friends = new ArrayList<>();
 
         //A partir de aquí, intentamos hacer la consulta:
@@ -64,5 +68,196 @@ public final class DAOFriendship extends AbstractDAO{
 
         //Devolvemos el resultado:
         return friends;
+    }
+
+    public List<String> getFriendRequests(String userName){
+        //Usaremos varios preparedstatement para hacer la consulta:
+        PreparedStatement stmFriendships = null;
+        //ResultSet para el resultado:
+        ResultSet rsFriendships;
+        //Recuperamos la conexión:
+        Connection con = super.getConnection();
+        //El resultado se meterá en un array de strings:
+        ArrayList<String> friends = new ArrayList<>();
+
+        //A partir de aquí, intentamos hacer la consulta:
+        try {
+            //Preparamos consulta (amistades en las que el usuario es el receptor y sin confirmar):
+            stmFriendships = con.prepareStatement("SELECT userSender as friend FROM friendship WHERE userReceiver = ? and confirmedFriendship = false");
+            //Completamos los parámetros con interrogantes:
+            stmFriendships.setString(1, userName);
+
+            //Ejecutamos la consulta:
+            rsFriendships = stmFriendships.executeQuery();;
+            
+            //Si hay resultados, los vamos procesando:
+            while(rsFriendships.next()){
+                //Añadimos el nombre de las personas que hacen cada solicitud (almacenado como friend):
+                friends.add(rsFriendships.getString("friend"));
+            }
+
+            //Hecho todo esto, haremos el commit:
+            con.commit();
+
+        } catch (SQLException ex){
+            //Tratamos de hacer el rollback:
+            try {
+                con.rollback();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            //Se imprime el stack trace (salvo un error de sintaxis, no es necesario contemplar esta excepción):
+            ex.printStackTrace();
+        } finally {
+            //Para terminar, se cierran los statements (si es posible):
+            try {
+                stmFriendships.close();
+            } catch (SQLException e){
+                System.out.println("Imposible cerrar los cursores");
+            }
+        }
+
+        //Devolvemos el resultado:
+        return friends;
+    }
+
+    public List<String> getFriendSentRequests(String userName){
+        //Usaremos varios preparedstatement para hacer la consulta:
+        PreparedStatement stmFriendships = null;
+        //ResultSet para el resultado:
+        ResultSet rsFriendships;
+        //Recuperamos la conexión:
+        Connection con = super.getConnection();
+        //El resultado se meterá en un array de strings:
+        ArrayList<String> friends = new ArrayList<>();
+
+        //A partir de aquí, intentamos hacer la consulta:
+        try {
+            //Preparamos consulta (amistades en las que el usuario es el emisor y sin confirmar):
+            stmFriendships = con.prepareStatement("SELECT userReceiver as friend FROM friendship WHERE userSender = ? and confirmedFriendship = false");
+            //Completamos los parámetros con interrogantes:
+            stmFriendships.setString(1, userName);
+
+            //Ejecutamos la consulta:
+            rsFriendships = stmFriendships.executeQuery();;
+            
+            //Si hay resultados, los vamos procesando:
+            while(rsFriendships.next()){
+                //Añadimos el nombre de las personas que reciben cada solicitud (almacenado como friend):
+                friends.add(rsFriendships.getString("friend"));
+            }
+
+            //Hecho todo esto, haremos el commit:
+            con.commit();
+
+        } catch (SQLException ex){
+            //Tratamos de hacer el rollback:
+            try {
+                con.rollback();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            //Se imprime el stack trace (salvo un error de sintaxis, no es necesario contemplar esta excepción):
+            ex.printStackTrace();
+        } finally {
+            //Para terminar, se cierran los statements (si es posible):
+            try {
+                stmFriendships.close();
+            } catch (SQLException e){
+                System.out.println("Imposible cerrar los cursores");
+            }
+        }
+
+        //Devolvemos el resultado:
+        return friends;
+    }
+
+    public void sendRequest(User user, String friendName) throws DatabaseException{
+        //Usaremos varios preparedstatement para hacer la consulta de validación del usuario,
+        //comprobar si la amistad existe y registrar la petición:
+        PreparedStatement stmUsers = null;
+        PreparedStatement stmSearchFriendship = null;
+        PreparedStatement stmAddFriendship = null;
+        ResultSet rsUsers;
+        ResultSet rsFriendships;
+        //Recuperamos la conexión
+        Connection con = super.getConnection();
+
+        //Usaremos una variable resultType para saber el resultado del cálculo (por defecto, OK):
+        ResultType resultType = ResultType.OK;
+
+        //A partir de aquí, intentamos hacer la consulta:
+        try {
+            //Preparamos consulta:
+            stmUsers = con.prepareStatement("SELECT * FROM user WHERE lower(userName) = lower(?) AND password = sha2(?, 256)");
+            //Completamos los parámetros con interrogantes:
+            stmUsers.setString(1, user.getUsername());
+            stmUsers.setString(2, user.getPassword());
+
+            //Ejecutamos la consulta:
+            rsUsers = stmUsers.executeQuery();;
+            
+            //Si hay resultado, el usuario existe - procedemos a realizar la búsqueda de la amistad:
+            if(rsUsers.next()){
+                //Buscaremos amistades en cualquiera de los dos posibles sentidos:
+                stmSearchFriendship = con.prepareStatement("SELECT * FROM friendship WHERE (userSender = ? AND userReceiver = ?) " +
+                                                                                    "OR (userSender = ? AND userReceiver = ?)");
+                                                                                    
+                //Se completa la consulta:
+                stmSearchFriendship.setString(1, user.getUsername());
+                stmSearchFriendship.setString(2, friendName);
+                stmSearchFriendship.setString(3, friendName);
+                stmSearchFriendship.setString(3, user.getUsername());
+
+                //Se hace la consulta. Para poder enviar la amistad no puede existir resultado:
+                rsFriendships = stmSearchFriendship.executeQuery();
+
+                //Hecha la consulta, se comprueba:
+                if(!rsFriendships.next()){
+                    //No hay un resultado: se añade la amistad.
+                    stmAddFriendship = con.prepareStatement("INSERT INTO friendship (userSender, userReceiver) VALUES (?, ?);");
+                    
+                    //Completamos los campos:
+                    stmAddFriendship.setString(1, user.getUsername());
+                    stmAddFriendship.setString(2, friendName);
+
+                    //Ejecutamos la actualización:
+                    stmAddFriendship.executeUpdate();
+                } else {
+                    //Hay resultado: se impide hacer nada más.
+                    resultType = ResultType.ALREADY_FRIENDS;
+                }
+            } else {
+                //No autorizado para pedir una amistad:
+                resultType = ResultType.UNAUTHORIZED;
+            }
+
+            //Hecho todo esto, haremos el commit:
+            con.commit();
+
+        } catch (SQLException ex){
+            //Tratamos de hacer el rollback:
+            try {
+                con.rollback();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            
+            throw new DatabaseException(ResultType.DATABASE_ERROR, ex.getMessage());
+        } finally {
+            //Para terminar, se cierran los statements (si es posible):
+            try {
+                stmUsers.close();
+                if(stmSearchFriendship!=null) stmSearchFriendship.close();
+                if(stmAddFriendship!=null) stmAddFriendship.close();
+            } catch (SQLException e){
+                System.out.println("Imposible cerrar los cursores");
+            }
+        }
+
+        //Si no se terminó correctamente (resultType != OK) se lanza excepción:
+        if(!resultType.equals(ResultType.OK)) {
+            throw new DatabaseException(resultType, "Error intentando añadir la amistad");
+        }
     }
 }
