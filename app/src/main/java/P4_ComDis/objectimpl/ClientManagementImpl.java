@@ -38,7 +38,7 @@ public class ClientManagementImpl extends UnicastRemoteObject implements ClientM
             try {
                 controller.loadRecievedMessage(message, clientInt, time);
             } catch (RemoteException e) {
-                System.out.println("Error on message load: " + e.getMessage());
+                System.out.println("Error en la carga del mensaje: " + e.getMessage());
             }
         });
     }
@@ -66,6 +66,27 @@ public class ClientManagementImpl extends UnicastRemoteObject implements ClientM
         //Llamamos a este método que nos actualizará la lista de conectados:
         Platform.runLater( () -> {
             controller.updateNewDisconnect(loggedOutClient);
+        });
+    }
+
+    @Override
+    public void notifyNewRequest(String username) throws RemoteException {
+        //Directamente se llama a un método del controlador para actualizar la lista de solicitudes:
+        Platform.runLater(()->{
+            controller.updateNewRequest(username);
+        });        
+    }
+
+    @Override
+    public void notifyConfirmation(ClientManagementInterface clientManagementInterface) throws RemoteException {
+        //Actualizamos lista de conectados:
+        Platform.runLater( () -> {
+            controller.updateNewConnection(clientManagementInterface);
+            try {
+                controller.updateConfirmation(clientManagementInterface.getClientName());
+            } catch (RemoteException e) {
+                System.out.println("Error en la carga de la confirmación: " + e.getMessage());
+            }
         });
     }
     

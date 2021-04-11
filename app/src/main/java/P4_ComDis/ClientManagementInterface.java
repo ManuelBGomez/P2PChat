@@ -17,4 +17,8 @@ public interface ClientManagementInterface extends Remote {
     public String getClientName() throws RemoteException;
 
     public void sendMessage(String message, ClientManagementInterface clientInt, String time) throws RemoteException;
+
+    public void notifyNewRequest(String username) throws RemoteException;
+
+    public void notifyConfirmation(ClientManagementInterface clientManagementInterface) throws RemoteException;
 }

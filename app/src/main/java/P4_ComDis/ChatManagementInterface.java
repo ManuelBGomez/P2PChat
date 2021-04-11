@@ -19,4 +19,10 @@ public interface ChatManagementInterface extends Remote {
     public void unregisterFromChat(ClientManagementInterface clientInfo) throws RemoteException;
 
     public List<String> searchFriends(User user, String pattern) throws RemoteException;
+
+    public ResultType sendFriendRequest(User user, String friendName) throws RemoteException;
+
+    public ResultType acceptRequest(User user, String friendName) throws RemoteException;
+
+    public ResultType deleteFriendship(User user, String friendName) throws RemoteException;
 }

@@ -95,4 +95,12 @@ public class BDFacade {
     public List<String> getFriendSentRequests(String userName){
         return daoFriendship.getFriendSentRequests(userName);
     }
+
+    public void acceptRequest(User user, String friendName) throws DatabaseException {
+        daoFriendship.acceptRequest(user, friendName);
+    }
+
+    public void deleteFriendship(User user, String friendName) throws DatabaseException {
+        daoFriendship.deleteFriendship(user, friendName);
+    }
 }

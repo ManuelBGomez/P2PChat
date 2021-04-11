@@ -100,6 +100,49 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
         return bdFacade.getUserNamesByPattern(user, pattern);
     }
 
+    @Override
+    public ResultType sendFriendRequest(User user, String friendName) throws RemoteException {
+        try {
+            //Se intenta enviar la petición de amistad:
+            bdFacade.sendRequest(user, friendName);
+            //Se notifica al usuario de la petición recibida (si está conectado):
+            if(clients.containsKey(friendName)){
+                clients.get(friendName).notifyNewRequest(user.getUsername());
+            }
+            //Se devuelve estado correcto:
+            return ResultType.OK;
+        } catch (DatabaseException e) {
+            //Se devuelve el resultType indicado en la excepción:
+            return e.getResultType();
+        }
+    }
+
+    @Override
+    public ResultType acceptRequest(User user, String friendName) throws RemoteException {
+        try {
+            //Se intenta aceptar la solicitud.
+            //Si se acepta, se notifica a ambos usuarios de la conexión del otro:
+            bdFacade.acceptRequest(user, friendName);
+            //Se comprueba, por si acaso, que ambos estén conectados (podrían no estarlo en este momento):
+            if(clients.containsKey(user.getUsername()) && clients.containsKey(friendName)){
+                //En ese caso procederemos a notificar uno al otro:
+                clients.get(user.getUsername()).notifyConnection(clients.get(friendName));
+                clients.get(friendName).notifyConfirmation(clients.get(user.getUsername()));
+            }
+            //Se devuelve un OK:
+            return ResultType.OK;
+        } catch (DatabaseException ex) {
+            //Si no se consigue aceptar la solicitud, se devuelve un error.
+            return ex.getResultType();
+        }
+    }
+
+    @Override
+    public ResultType deleteFriendship(User user, String friendName) throws RemoteException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     private void notifyClientsOnConnect(ClientManagementInterface clientInfo) throws RemoteException{
         //Se debe enviar al cliente que corresponde el listado completo de sus amigos y, además, enviar
         //a todos los clientes amigos la notificación de conexión del cliente.
@@ -135,5 +178,5 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
             }
         }
     }
-    
+
 }

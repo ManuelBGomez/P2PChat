@@ -203,7 +203,7 @@ public class MainPageController implements Initializable{
             //Se permite crecimiento del VBox en vertical (diseño responsivo)
             VBox.setVgrow(rightBox.getChildren().get(0), Priority.ALWAYS);
             controllerFriendships = loader.<FriendshipsController>getController();
-            controllerFriendships.setValues(this, this.user, this.sentRequests, this.receivedRequests);
+            controllerFriendships.setValues(this, this.sentRequests, this.receivedRequests);
             //Ahora mismo deja de haber un controllerChat activo, por lo que directamente se pone a null:
             controllerChat = null;
         } catch (IOException ex) {
@@ -215,5 +215,89 @@ public class MainPageController implements Initializable{
     public List<String> performSearch(String pattern) throws RemoteException{
         //Hacemos la búsqueda mediante llamada al servidor y devolvemos el resultado:
         return this.cm.searchFriends(this.user, pattern);
+    }
+
+    public void updateNewRequest(String userName) {
+        //Tomamos la lista de solicitudes y añadimos ésta:
+        this.receivedRequests.add(userName);
+        //Si está abierto el controlador de la pestaña de amigos, se añade:
+        if(this.controllerFriendships != null){
+            this.controllerFriendships.addRequest(userName);
+        }
+    }
+
+    public boolean manageSendRequest(String userName) {
+        //Enviamos la solicitud y devolvemos el resultado:
+        try {
+            switch(cm.sendFriendRequest(this.user, userName)) {
+                case ALREADY_FRIENDS:
+                    //Si los usuarios ya tienen una petición, se avisa:
+                    Dialogs.showError("Error", "Error al añadir el amigo", "Ya se tiene registrada amistad entre estos usuarios.");
+                    return false;
+                case DATABASE_ERROR:
+                    //Se avisa en caso de error en la base de datos:
+                    Dialogs.showError("Error", "Error al añadir el amigo", "Fallo en la base de datos. Inténtelo de nuevo más tarde.");
+                    return false;
+                case OK:
+                    //En caso de acabar bien, se añade la solicitud enviada:
+                    this.sentRequests.add(userName);
+                    //Si está abierto el controlador de la pestaña de amigos (en teoría sí), se añade:
+                    if(this.controllerFriendships != null){
+                        this.controllerFriendships.addSent(userName);
+                    }
+                    return true;
+                case UNAUTHORIZED:
+                    //Se avisa en caso de no tener permiso:
+                    Dialogs.showError("Error", "Error al añadir el amigo", "Usuario no autorizado para hacer la modificación");
+                    return false;
+                default:
+                    return false;
+            }
+        } catch (RemoteException ex) {
+            //Si se recibe una excepción al comunicarse con el servidor, se avisa de ella:
+            Dialogs.showError("Error", "Error en la conexión con el servidor", "Motivo: " + ex.getMessage() +  ". Saliendo...");
+            return false;
+        }
+    }
+
+    public boolean manageConfirmation(String userName) {
+        //Enviamos la solicitud de confirmación y analizamos el resultado:
+        try {
+            switch(cm.acceptRequest(this.user, userName)){
+                case DATABASE_ERROR:
+                    //Se avisa en caso de error en la base de datos:
+                    Dialogs.showError("Error", "Error al confirmar la solicitud",
+                                        "Fallo en la base de datos. Inténtelo de nuevo más tarde.");
+                    return false;
+                case NOT_VALID:
+                    //Se avisa en caso de confirmación errónea:
+                    Dialogs.showError("Error", "Error al confirmar la solicitud",
+                                        "No se encuentra la amistad correspondiente.");
+                    return false;
+                case OK:
+                    //En este caso se elimina la solicitud pendiente del usuario:
+                    receivedRequests.remove(userName);
+                    return true;
+                case UNAUTHORIZED:
+                    Dialogs.showError("Error", "Error al confirmar la solicitud", 
+                                        "Usuario no autorizado para hacer la modificación");
+                    return false;
+                default:
+                    return false;
+            }
+        } catch (RemoteException ex) {
+            //Si se recibe una excepción al comunicarse con el servidor, se avisa de ella:
+            Dialogs.showError("Error", "Error en la conexión con el servidor", "Motivo: " + ex.getMessage() +  ". Saliendo...");
+            return false;
+        }
+    }
+
+    public void updateConfirmation(String clientName) {
+        //Se actualiza la lista de solicitudes enviadas:
+        this.sentRequests.remove(clientName);
+        //Si la pantalla de amigos está abierta, se notifica:
+        if(controllerFriendships != null) {
+            controllerFriendships.removeSentReq(clientName);
+        }
     }
 }

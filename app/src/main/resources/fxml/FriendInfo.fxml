@@ -42,9 +42,17 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView fx:id="imgBtnConf" fitHeight="100.0" fitWidth="80.0" layoutX="10.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="120.0">
+            <ImageView fx:id="imgBtnConf" fitHeight="100.0" fitWidth="80.0" layoutX="10.0" layoutY="10.0" onMouseClicked="#btnConfOnClick" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="120.0">
                <image>
                   <Image url="@../img/comprobado.png" />
+               </image>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </ImageView>
+            <ImageView fx:id="imgBtnAdd" fitHeight="100.0" fitWidth="80.0" layoutX="10.0" layoutY="10.0" onMouseClicked="#btnAddOnClick" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="20.0">
+               <image>
+                  <Image url="@../img/plus.png" />
                </image>
                <cursor>
                   <Cursor fx:constant="HAND" />
