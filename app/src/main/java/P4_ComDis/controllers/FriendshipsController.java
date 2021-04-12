@@ -164,9 +164,40 @@ public class FriendshipsController implements Initializable{
         sentList.remove(clientName);
     }
 
-    public void manageRejection(String text, FriendRequestType rType) {
-        //En función del tipo se llamará a un método adecuado.
+    public void removeRecReq(String userName) {
+        //Eliminamos la solicitud:
+        usersReceivedList.getChildren().remove(receivedList.get(userName));
+        //Se elimina también del hashmap:
+        receivedList.remove(userName);
     }
+    
+    public void manageRejection(String userName, FriendRequestType rType) {
+        //En función del tipo se llamará a un método adecuado.
+        switch(rType){
+        case RECV:
+            //Solicitud recibida: se gestionará el rechazo de la solicitud:
+            if(controllerPrincipal.rejectRequest(userName)){
+                //Si se ha rechazado, se elimina de las solicitudes recibidas:
+                usersReceivedList.getChildren().remove(receivedList.get(userName));
+                //Se elimina también del hashmap:
+                receivedList.remove(userName);
+            }
+            
+            break;
+        case SENT:
+            //Solicitud enviada: se gestionará la cancelación de una solicitud.
+            if(controllerPrincipal.cancelRequest(userName)){
+                //Si se cancela correctamente, se elimina de las solicitudes recibidas:
+                usersSentList.getChildren().remove(sentList.get(userName));
+                //Se elimina también del hashmap:
+                sentList.remove(userName);
+            }
+            break;
+        default:
+            break;
+        }
+    }
+
 
     
 }

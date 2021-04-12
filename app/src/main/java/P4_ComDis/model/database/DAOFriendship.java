@@ -396,10 +396,10 @@ public final class DAOFriendship extends AbstractDAO{
                                                                                          "OR (userSender = ? AND userReceiver = ?)");
 
                     //Completamos los campos (el receptor debe ser el usuario que quiere aceptar la amistad):
-                    stmSearchFriendship.setString(1, user.getUsername());
-                    stmSearchFriendship.setString(2, friendName);
-                    stmSearchFriendship.setString(3, friendName);
-                    stmSearchFriendship.setString(4, user.getUsername());
+                    stmDeleteFriendship.setString(1, user.getUsername());
+                    stmDeleteFriendship.setString(2, friendName);
+                    stmDeleteFriendship.setString(3, friendName);
+                    stmDeleteFriendship.setString(4, user.getUsername());
 
                     //Ejecutamos la actualización:
                     stmDeleteFriendship.executeUpdate();

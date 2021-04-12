@@ -21,4 +21,8 @@ public interface ClientManagementInterface extends Remote {
     public void notifyNewRequest(String username) throws RemoteException;
 
     public void notifyConfirmation(ClientManagementInterface clientManagementInterface) throws RemoteException;
+
+    public void notifyRejection(String username) throws RemoteException;
+
+    public void notifyCancelledRequest(String username) throws RemoteException;
 }

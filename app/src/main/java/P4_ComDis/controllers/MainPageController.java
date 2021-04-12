@@ -292,12 +292,83 @@ public class MainPageController implements Initializable{
         }
     }
 
-    public void updateConfirmation(String clientName) {
+    public void deleteSentRequest(String clientName) {
         //Se actualiza la lista de solicitudes enviadas:
         this.sentRequests.remove(clientName);
         //Si la pantalla de amigos está abierta, se notifica:
         if(controllerFriendships != null) {
             controllerFriendships.removeSentReq(clientName);
+        }
+    }
+
+    public boolean rejectRequest(String userName) {
+        //Se intenta llamar al método del servidor:
+        try {
+            switch(cm.rejectFriendship(this.user, userName)){
+            case DATABASE_ERROR:
+                Dialogs.showError("Error", "Error al rechazar la solicitud",
+                                    "Fallo en la base de datos. Inténtelo de nuevo más tarde.");
+                return false;
+            case NOT_VALID:
+                Dialogs.showError("Error", "Error al confirmar la solicitud",
+                                    "No existe ninguna solicitud que haya enviado " + userName + ".");
+                return false;
+            case OK:            
+                //Se elimina la solicitud recibida:
+                this.receivedRequests.remove(userName);
+                return true;
+            case UNAUTHORIZED:        
+                Dialogs.showError("Error", "Error al confirmar la solicitud",
+                                    "Usuario no autorizado a realizar la modificación.");
+                return false;
+            default:
+                //Los resultados que puede devolver son los anteriores. En caso de obtener otro, se devolvería algo incorrecto:
+                return false;
+            }
+        } catch (RemoteException ex) {
+            //En caso de excepción remota, se avisa y se termina:
+            Dialogs.showError("Error", "Error en la conexión con el servidor", "Motivo: " + ex.getMessage() +  ". Saliendo...");
+            return false;
+        }
+    }
+
+    public boolean cancelRequest(String userName) {
+        //Se intenta llamar al método correspondiente del servidor que permite cancelar la petición:
+        try {
+            switch(cm.cancelRequest(this.user, userName)){
+            case DATABASE_ERROR:
+                Dialogs.showError("Error", "Error al rechazar la solicitud",
+                                    "Fallo en la base de datos. Inténtelo de nuevo más tarde.");
+                return false;
+            case NOT_VALID:
+                Dialogs.showError("Error", "Error al confirmar la solicitud",
+                                    "No existe ninguna solicitud enviada a " + userName + ".");
+                return false;
+            case OK:            
+                //Se elimina la solicitud recibida:
+                this.sentRequests.remove(userName);
+                return true;
+            case UNAUTHORIZED:        
+                Dialogs.showError("Error", "Error al confirmar la solicitud",
+                                    "Usuario no autorizado a realizar la cancelación de la solicitud.");
+                return false;
+            default:
+                //Los resultados que puede devolver son los anteriores. En caso de obtener otro, se devolvería algo incorrecto:
+                return false;
+            }
+        } catch (RemoteException ex) {
+            //En caso de excepción remota, se avisa y se termina:
+            Dialogs.showError("Error", "Error en la conexión con el servidor", "Motivo: " + ex.getMessage() +  ". Saliendo...");
+            return false;
+        }
+    }
+
+    public void deleteReceivedRequest(String userName) {
+        //Se actualiza la lista de solicitudes recibidas:
+        this.receivedRequests.remove(userName);
+        //Si la pantalla de amigos está abierta, se notifica:
+        if(controllerFriendships != null) {
+            controllerFriendships.removeRecReq(userName);
         }
     }
 }

@@ -123,11 +123,12 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
             //Se intenta aceptar la solicitud.
             //Si se acepta, se notifica a ambos usuarios de la conexión del otro:
             bdFacade.acceptRequest(user, friendName);
-            //Se comprueba, por si acaso, que ambos estén conectados (podrían no estarlo en este momento):
-            if(clients.containsKey(user.getUsername()) && clients.containsKey(friendName)){
+            //Se comprueba, por si acaso, si está el cliente conectado:
+            if(clients.containsKey(friendName)){
                 //En ese caso procederemos a notificar uno al otro:
-                clients.get(user.getUsername()).notifyConnection(clients.get(friendName));
                 clients.get(friendName).notifyConfirmation(clients.get(user.getUsername()));
+                //Se le notifica también la conexión:
+                clients.get(user.getUsername()).notifyConnection(clients.get(friendName));
             }
             //Se devuelve un OK:
             return ResultType.OK;
@@ -138,8 +139,41 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
     }
 
     @Override
+    public ResultType rejectFriendship(User user, String friendName) throws RemoteException {
+        try{
+            //Se borra la amistad: la solicitud es rechazada:
+            bdFacade.deleteFriendship(user, friendName);
+            //Si sigue correctamente, podemos notificar al cliente correspondiente del rechazo:
+            if(clients.containsKey(friendName)){
+                //Como no se llegaron a añadir los usuarios, no hay que notificar nada más:
+                clients.get(friendName).notifyRejection(user.getUsername());
+            }
+            return ResultType.OK;
+        } catch (DatabaseException ex) {
+            //Si no se consigue aceptar la solicitud, se devuelve un estado erróneo.
+            return ex.getResultType();
+        }
+    }
+
+    @Override
+    public ResultType cancelRequest(User user, String friendName) throws RemoteException {
+        try{
+            //Se borra la amistad: la solicitud es rechazada:
+            bdFacade.deleteFriendship(user, friendName);
+            //Si sigue correctamente, podemos notificar al cliente correspondiente si está conectado:
+            if(clients.containsKey(friendName)){
+                //Como no se llegaron a añadir los usuarios, no hay que notificar nada más que la cancelación de la solicitud:
+                clients.get(friendName).notifyCancelledRequest(user.getUsername());
+            }
+            return ResultType.OK;
+        } catch (DatabaseException ex) {
+            //Si no se consigue aceptar la solicitud, se devuelve un estado erróneo.
+            return ex.getResultType();
+        }
+    }
+
+    @Override
     public ResultType deleteFriendship(User user, String friendName) throws RemoteException {
-        // TODO Auto-generated method stub
         return null;
     }
 

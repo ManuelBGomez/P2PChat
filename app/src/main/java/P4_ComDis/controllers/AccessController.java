@@ -73,8 +73,6 @@ public class AccessController implements Initializable {
 
             //Recuperamos el controlador:
             this.mainController = root.<MainPageController>getController();
-            //Vamos creando ya la interfaz cliente (sin nada):
-            this.cImpl = new ClientManagementImpl(this.mainController, "");
             //Además, se recupera la interfaz del servidor:
             String registryURL = "rmi://localhost:1099/chatManager";
 
@@ -88,11 +86,9 @@ public class AccessController implements Initializable {
         }
     }
 
-
     public Stage getPrimaryStage() {
         return primaryStage;
     }
-
 
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -102,12 +98,11 @@ public class AccessController implements Initializable {
         //Se hace el inicio de sesión, haciendo la petición al servidor:
         //Creamos el usuario a pasar al servidor:
         User user = new User(userName.getText(), password.getText());
-
-        //Se establece el nombre del cliente en la interfaz del cliente (será la referencia del nombre que tendrán los
-        //demás clientes con los que nos comuniquemos)
-        this.cImpl.setClientName(user.getUsername());
-
         try {
+            //Se establece el nombre del cliente en la interfaz del cliente (será la referencia del nombre que tendrán los
+            //demás clientes con los que nos comuniquemos)
+            //Vamos creando ya la interfaz cliente (sin nada):    
+            this.cImpl = new ClientManagementImpl(this.mainController, user.getUsername());
             //Se hace el login y se evalúa el resultado obtenido:
             switch(cmInt.loginToChat(user, this.cImpl)){
             case ALREADY_CONNECTED:
@@ -153,13 +148,14 @@ public class AccessController implements Initializable {
         //Creamos el usuario a pasar al servidor:
         User user = new User(userName.getText(), password.getText());
 
-        //Se establece el nombre del cliente en la interfaz del cliente (será la referencia del nombre que tendrán los
-        //demás clientes con los que nos comuniquemos)
-        this.cImpl.setClientName(user.getUsername());
-
         //Llamamos al método necesario, capturando excepción remota:
         try {
-            //Se hace el login y se evalúa el resultado obtenido:
+            //Se establece el nombre del cliente en la interfaz del cliente (será la referencia del nombre que tendrán los
+            //demás clientes con los que nos comuniquemos)
+            //Vamos creando ya la interfaz cliente (sin nada):    
+            this.cImpl = new ClientManagementImpl(this.mainController, user.getUsername());
+            
+            //Se hace el registro y se evalúa el resultado obtenido:
             switch(cmInt.registerInChat(user, this.cImpl)){
             case DATABASE_ERROR:
                 //Error en la DB, se avisa (y se oculta la label de error por si se abriese antes):

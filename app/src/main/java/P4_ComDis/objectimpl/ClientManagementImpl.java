@@ -28,10 +28,6 @@ public class ClientManagementImpl extends UnicastRemoteObject implements ClientM
         return clientName;
     }
 
-    public void setClientName(String clientName) {
-        this.clientName = clientName;
-    }
-
     @Override
     public void sendMessage(String message, ClientManagementInterface clientInt, String time) throws RemoteException {
         Platform.runLater(()->{
@@ -80,14 +76,29 @@ public class ClientManagementImpl extends UnicastRemoteObject implements ClientM
     @Override
     public void notifyConfirmation(ClientManagementInterface clientManagementInterface) throws RemoteException {
         //Actualizamos lista de conectados:
-        Platform.runLater( () -> {
+        Platform.runLater(() -> {
             controller.updateNewConnection(clientManagementInterface);
             try {
-                controller.updateConfirmation(clientManagementInterface.getClientName());
+                controller.deleteSentRequest(clientManagementInterface.getClientName());
             } catch (RemoteException e) {
                 System.out.println("Error en la carga de la confirmación: " + e.getMessage());
             }
         });
     }
-    
+
+    @Override
+    public void notifyRejection(String username) throws RemoteException {
+        //Actualizamos lista de solicitudes enviadas:
+        Platform.runLater(() -> {
+            controller.deleteSentRequest(username);
+        });
+    }
+
+    @Override
+    public void notifyCancelledRequest(String username) throws RemoteException{
+        //Actualizamos lista de solicitudes recibidas:
+        Platform.runLater(() -> {
+            controller.deleteReceivedRequest(username);
+        });
+    }
 }

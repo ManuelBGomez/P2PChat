@@ -24,5 +24,9 @@ public interface ChatManagementInterface extends Remote {
 
     public ResultType acceptRequest(User user, String friendName) throws RemoteException;
 
+    public ResultType rejectFriendship(User user, String friendName) throws RemoteException;
+
+    public ResultType cancelRequest(User user, String friendName) throws RemoteException;
+
     public ResultType deleteFriendship(User user, String friendName) throws RemoteException;
 }

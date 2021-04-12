@@ -34,7 +34,7 @@
                   <Font name="System Bold" size="24.0" />
                </font>
             </Label>
-            <ImageView fx:id="imgBtnRec" fitHeight="100.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="10.0">
+            <ImageView fx:id="imgBtnRec" fitHeight="100.0" fitWidth="80.0" onMouseClicked="#btnRecOnClick" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="10.0">
                <image>
                   <Image url="@../img/cancelar.png" />
                </image>
