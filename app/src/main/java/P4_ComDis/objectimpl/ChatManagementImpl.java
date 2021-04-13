@@ -177,6 +177,42 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
         return null;
     }
 
+    @Override
+    public ResultType changePassword(User user, String newPass) throws RemoteException {
+        try {
+            //Se procede al cambio:
+            bdFacade.changePassword(user, newPass);
+            //Se devuelve un estado correcto:
+            return ResultType.OK;
+        } catch (DatabaseException ex) {
+            return ex.getResultType();
+        }
+    }
+
+    @Override
+    public ResultType unregister(User user) throws RemoteException {
+        try{
+            //Se recupera a las amistades ya (para poder notificar despues):
+            List<String> friends = this.bdFacade.getFriendNames(user.getUsername());
+            //Se procede al borrado:
+            bdFacade.unregister(user);
+            //Si se ha hecho el borrado, se notifica de la desconexión a las amistades:
+            for(String friendName : friends) {
+                //Para cada amigo, si está en el hashmap principal (es decir, conectado), se enviará:
+                if(clients.containsKey(friendName)) {
+                    //notificación de la desconexión del usuario:
+                    clients.get(friendName).notifyDisconnection(clients.get(user.getUsername()));
+                }
+            }
+            //Se elimina del hashmap el usuario:
+            clients.remove(user.getUsername());
+            //Se devuelve un estado ok:
+            return ResultType.OK;
+        } catch (DatabaseException e) {
+            return e.getResultType();
+        }
+    }
+
     private void notifyClientsOnConnect(ClientManagementInterface clientInfo) throws RemoteException{
         //Se debe enviar al cliente que corresponde el listado completo de sus amigos y, además, enviar
         //a todos los clientes amigos la notificación de conexión del cliente.
@@ -212,5 +248,4 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
             }
         }
     }
-
 }

@@ -17,7 +17,7 @@ public final class DAOUser extends AbstractDAO {
         super(connection);
     }
 
-    public void login(User user) throws DatabaseException{
+    public void login(User user) throws DatabaseException {
         //Usaremos varios preparedstatement para hacer la consulta y efectuar el login:
         PreparedStatement stmUsers = null;
         PreparedStatement stmUpdateUsers = null;
@@ -100,7 +100,7 @@ public final class DAOUser extends AbstractDAO {
         }
     }
     
-    public void logout(User user) throws DatabaseException{
+    public void logout(User user) throws DatabaseException {
         //Usaremos varios preparedstatement para hacer la consulta y efectuar el logout:
         PreparedStatement stmUsers = null;
         PreparedStatement stmLogoutUser = null;
@@ -158,7 +158,7 @@ public final class DAOUser extends AbstractDAO {
         }
     }
 
-    public void register(User user) throws DatabaseException{
+    public void register(User user) throws DatabaseException {
         //Usaremos varios preparedstatement para la consulta:
         PreparedStatement stmUsers = null;
         PreparedStatement stmRegister = null;
@@ -291,5 +291,120 @@ public final class DAOUser extends AbstractDAO {
         //Devolvemos el resultado (se tendrá algo cuando la consulta tenga éxito, no habrá resultado si
         //el usuario no es válido o si no se encuentran usuarios con el término buscado)
         return users;
+    }
+
+    public void changePassword(User user, String newPass) throws DatabaseException {
+        //Usaremos varios preparedstatement para hacer la consulta y efectuar el cambio de contraseña:
+        PreparedStatement stmUsers = null;
+        PreparedStatement stmChangePassword = null;
+        ResultSet rsUsers;
+        //Recuperamos la conexión
+        Connection con = super.getConnection();
+        //Utilizamos un booleano como referencia de si hay problemas:
+        boolean valid = false;
+
+        //A partir de aquí, intentamos hacer la consulta:
+        try {
+            //Preparamos consulta:
+            stmUsers = con.prepareStatement("SELECT * FROM user WHERE lower(userName) = lower(?) AND password = sha2(?, 256)");
+            //Completamos los parámetros con interrogantes:
+            stmUsers.setString(1, user.getUsername());
+            stmUsers.setString(2, user.getPassword());
+
+            //Ejecutamos la consulta:
+            rsUsers = stmUsers.executeQuery();;
+            
+            //Si hay resultado, estableceremos el nuevo password:
+            if(rsUsers.next()){
+                //Preparamos una actualización - contraseña:
+                stmChangePassword = con.prepareStatement("UPDATE user SET password = sha2(?, 256) WHERE userName = ?");
+                stmChangePassword.setString(1, newPass);
+                stmChangePassword.setString(2, user.getUsername());
+                //Ejecutamos la actualización:
+                stmChangePassword.executeUpdate();
+                valid = true;
+            }
+
+            //Hecho todo esto, haremos el commit:
+            con.commit();
+
+        } catch (SQLException ex){
+            //Tratamos de hacer el rollback:
+            try {
+                con.rollback();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            //Enviamos excepción:
+            throw new DatabaseException(ResultType.DATABASE_ERROR, ex.getMessage());
+        } finally {
+            //Para terminar, se cierran los statements (si es posible):
+            try {
+                stmUsers.close();
+                if(stmChangePassword!=null) stmChangePassword.close();
+            } catch (SQLException e){
+                System.out.println("Imposible cerrar los cursores");
+            }
+        }
+        if(!valid) {
+            throw new DatabaseException(ResultType.UNAUTHORIZED, "Usuario o contraseña inválidos");
+        }
+    }
+
+    public void unregister(User user) throws DatabaseException {
+        //Usaremos varios preparedstatement para hacer la consulta y efectuar el borrado:
+        PreparedStatement stmUsers = null;
+        PreparedStatement stmDelete = null;
+        ResultSet rsUsers;
+        //Recuperamos la conexión
+        Connection con = super.getConnection();
+        //Utilizamos un booleano como referencia de si hay problemas:
+        boolean valid = false;
+
+        //A partir de aquí, intentamos hacer la consulta:
+        try {
+            //Preparamos consulta:
+            stmUsers = con.prepareStatement("SELECT * FROM user WHERE lower(userName) = lower(?) AND password = sha2(?, 256)");
+            //Completamos los parámetros con interrogantes:
+            stmUsers.setString(1, user.getUsername());
+            stmUsers.setString(2, user.getPassword());
+
+            //Ejecutamos la consulta:
+            rsUsers = stmUsers.executeQuery();;
+            
+            //Si hay resultado, estableceremos el nuevo password:
+            if(rsUsers.next()){
+                //Preparamos una actualización - contraseña:
+                stmDelete = con.prepareStatement("DELETE FROM user WHERE userName = ?");
+                stmDelete.setString(1, user.getUsername());
+                //Ejecutamos la actualización:
+                stmDelete.executeUpdate();
+                valid = true;
+            }
+
+            //Hecho todo esto, haremos el commit:
+            con.commit();
+
+        } catch (SQLException ex){
+            //Tratamos de hacer el rollback:
+            try {
+                con.rollback();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            //Enviamos excepción:
+            throw new DatabaseException(ResultType.DATABASE_ERROR, ex.getMessage());
+        } finally {
+            //Para terminar, se cierran los statements (si es posible):
+            try {
+                stmUsers.close();
+                if(stmDelete!=null) stmDelete.close();
+            } catch (SQLException e){
+                System.out.println("Imposible cerrar los cursores");
+            }
+        }
+        if(!valid) {
+            throw new DatabaseException(ResultType.UNAUTHORIZED, "Usuario o contraseña inválidos");
+        }
     }
 }

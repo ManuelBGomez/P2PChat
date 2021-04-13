@@ -13,6 +13,7 @@ import org.controlsfx.control.Notifications;
 import P4_ComDis.ChatManagementInterface;
 import P4_ComDis.ClientManagementInterface;
 import P4_ComDis.aux.Dialogs;
+import P4_ComDis.model.dataClasses.ResultType;
 import P4_ComDis.model.dataClasses.User;
 import P4_ComDis.objectimpl.ClientManagementImpl;
 import javafx.fxml.FXMLLoader;
@@ -47,6 +48,8 @@ public class MainPageController implements Initializable{
     private ChatController controllerChat;
     //Controlador de una posible pantalla de amistades abierta en un momento determinado:
     private FriendshipsController controllerFriendships;
+    //Controlador de una posible pantalla de ajustes de la cuenta abierta en un momento determinado:
+    private AccountToolsController controllerAccount;
     //HashMap con los clientes amigos conectados:
     private HashMap<String, ClientManagementInterface> friendsConnected;
     //Lista de usuarios acompañadas de los nodos que les corresponden (se usa para controlar el listado de chats disponibles):
@@ -162,8 +165,9 @@ public class MainPageController implements Initializable{
             loader.<ChatController>getController().setClientAndSenderInt(clientInt, client);
             //Guardamos controlador en chat privado:
             controllerChat = loader.<ChatController>getController();
-            //Ponemos el de amistades a null (se ha cargado un chat encima):
-            controllerFriendships = null;
+            //Ponemos el de amistades y el de la cuenta a null (se ha cargado un chat encima):
+            this.controllerAccount = null;
+            this.controllerFriendships = null;
         } catch (IOException ex){
             System.out.println("Error cargando el chat: " + ex.getMessage());
             ex.printStackTrace();
@@ -204,8 +208,29 @@ public class MainPageController implements Initializable{
             VBox.setVgrow(rightBox.getChildren().get(0), Priority.ALWAYS);
             controllerFriendships = loader.<FriendshipsController>getController();
             controllerFriendships.setValues(this, this.sentRequests, this.receivedRequests);
-            //Ahora mismo deja de haber un controllerChat activo, por lo que directamente se pone a null:
-            controllerChat = null;
+            //Ahora mismo deja de haber un controllerChat o de cuenta activo, por lo que directamente se pone a null:
+            this.controllerChat = null;
+            this.controllerAccount = null;
+        } catch (IOException ex) {
+            System.out.println("Error cargando pantalla de amigos: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    public void btnAccountOnClick(MouseEvent event){
+        try {
+            //Si se pulsa este botón, abriremos la pantalla de ajustes de la cuenta (borrar/cambiar password):
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AccountTools.fxml"));
+            //Recuperamos el controlador y le asignamos parámetros que le serán de utilidad:
+            rightBox.getChildren().clear();
+            rightBox.getChildren().add(loader.load());
+            //Se permite crecimiento del VBox en vertical (diseño responsivo)
+            VBox.setVgrow(rightBox.getChildren().get(0), Priority.ALWAYS);
+            this.controllerAccount = loader.<AccountToolsController>getController();
+            this.controllerAccount.setValues(this);
+            //El controlador activo pasa a ser el de la gestión de la cuenta, el resto se ponen a null:
+            this.controllerChat = null;
+            this.controllerFriendships = null;
         } catch (IOException ex) {
             System.out.println("Error cargando pantalla de amigos: " + ex.getMessage());
             ex.printStackTrace();
@@ -370,5 +395,21 @@ public class MainPageController implements Initializable{
         if(controllerFriendships != null) {
             controllerFriendships.removeRecReq(userName);
         }
+    }
+
+    public ResultType changePassword(String oldPass, String newPass) throws RemoteException {
+        //Se crea un objeto usuario específico con el nuevo usuario:
+        User user = new User(this.user.getUsername(), oldPass);
+        //Se envía la solicitud:
+        ResultType rt =  cm.changePassword(user, newPass);
+        if(rt.equals(ResultType.OK)){
+            //Si el resultado fue correcto, se asigna nueva contraseña al usuario:
+            this.user.setPassword(newPass);
+        }
+        return rt;
+    }
+
+    public ResultType deleteAccount() throws RemoteException {
+        return cm.unregister(this.user);
     }
 }

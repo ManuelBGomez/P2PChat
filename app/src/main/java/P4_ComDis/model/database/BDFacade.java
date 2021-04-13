@@ -80,6 +80,14 @@ public class BDFacade {
         return this.daoFriendship.getFriendNames(userName);
     }
 
+    public void changePassword(User user, String newPass) throws DatabaseException{
+        daoUser.changePassword(user, newPass);
+    }
+
+    public void unregister(User user) throws DatabaseException {
+        daoUser.unregister(user);
+    }
+
     public List<String> getUserNamesByPattern(User user, String pattern){
         return this.daoUser.getUserNamesByPattern(user, pattern);
     }
