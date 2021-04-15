@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.ResourceBundle;
 
 import P4_ComDis.ClientManagementInterface;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -23,6 +24,7 @@ public class ChatController implements Initializable {
     //Atributo privado: la interfaz del cliente en comunicación:
     private ClientManagementInterface clientInt;
     private ClientManagementInterface senderInt;
+    private MainPageController controllerPrincipal;
 
     //Atributos públicos: elementos de la interfaz
     public Label nameTag;
@@ -43,10 +45,12 @@ public class ChatController implements Initializable {
     }
 
 
-    public void setClientAndSenderInt(ClientManagementInterface clientInt, ClientManagementInterface senderInt) throws RemoteException {
+    public void setValues(ClientManagementInterface clientInt, ClientManagementInterface senderInt,
+                            MainPageController controllerPrincipal) throws RemoteException {
         //Asignamos la interfaz del cliente:
         this.clientInt = clientInt;
         this.senderInt = senderInt;
+        this.controllerPrincipal = controllerPrincipal;
         //Establecemos el texto de la etiqueta con el nombre:
         nameTag.setText(clientInt.getClientName());
     }
@@ -83,6 +87,11 @@ public class ChatController implements Initializable {
         } catch (RemoteException e) {
             System.out.println("Error on sending: " + e.getMessage());
         }
+    }
+
+    public void btnDeleteFriendshipOnClick(ActionEvent event){
+        //Llamamos al controlador principal para gestionar el borrado:
+        this.controllerPrincipal.deleteFriendship(nameTag.getText());
     }
     
 }

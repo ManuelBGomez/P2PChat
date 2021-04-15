@@ -2,7 +2,6 @@ package P4_ComDis.controllers;
 
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 import P4_ComDis.aux.Dialogs;
@@ -11,7 +10,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 

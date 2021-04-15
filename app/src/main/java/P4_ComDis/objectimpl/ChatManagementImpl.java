@@ -51,8 +51,8 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
             bdFacade.logout(user);
             //Se notifica el cierre de sesión correspondiente (si todo es correcto)
             if(clients.containsKey(user.getUsername())){
-                //En principio este if se debería cumplir, aunque en todo caso se avisaría si no fuese así.s
-                this.notifyClientsOnDisconnect(clients.get(user.getUsername()));
+                //En principio este if se debería cumplir, aunque en todo caso se avisaría si no fuese así.
+                this.notifyClientsOnDisconnect(user.getUsername());
                 //Se elimina el cliente del hashmap:
                 clients.remove(user.getUsername());            
                 System.out.println("Cliente " + user.getUsername() + " ha cerrado sesión");
@@ -81,17 +81,6 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
             //Si hay alguna excepción se devuelve el motivo:
             return ex.getResultType();
         }
-    }
-
-    @Override
-    public void unregisterFromChat(ClientManagementInterface clientInfo) throws RemoteException {
-        /*//Procedemos a eliminar el cliente:
-        if(clients.remove(clientInfo)){
-            //Notificamos la nueva lista a los clientes conectados:
-            this.notifyClients();
-            //Si se elimina se avisa
-            System.out.println("Removed client and notified");
-        }*/
     }
 
     @Override
@@ -174,7 +163,20 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
 
     @Override
     public ResultType deleteFriendship(User user, String friendName) throws RemoteException {
-        return null;
+        try {
+            //Borramos la amistad
+            bdFacade.deleteFriendship(user, friendName);
+            //Notificamos desconexión del usuario:
+            if(clients.containsKey(friendName)){
+                //Se notifica la "desconexión" (deja de estar disponible el cliente - cancelada la amistad):
+                clients.get(friendName).notifyDisconnection(user.getUsername());
+            }
+            //Devolvemos resultado OK:
+            return ResultType.OK;
+        } catch(DatabaseException ex){ 
+            //Devolvemos el resultado obtenido de la excepción:
+            return ex.getResultType();
+        }
     }
 
     @Override
@@ -201,7 +203,7 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
                 //Para cada amigo, si está en el hashmap principal (es decir, conectado), se enviará:
                 if(clients.containsKey(friendName)) {
                     //notificación de la desconexión del usuario:
-                    clients.get(friendName).notifyDisconnection(clients.get(user.getUsername()));
+                    clients.get(friendName).notifyDisconnection(user.getUsername());
                 }
             }
             //Se elimina del hashmap el usuario:
@@ -236,15 +238,15 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
         clientInfo.setClientInfo(clFriends, sentRequests, receivedRequests);
     }
 
-    private void notifyClientsOnDisconnect(ClientManagementInterface clientInfo) throws RemoteException{
+    private void notifyClientsOnDisconnect(String clientName) throws RemoteException{
         //Se notificará a los amigos del cliente cuando este se desconecte, para que puedana actualizar su
         //lista de contactos activa.
-        List<String> friends = this.bdFacade.getFriendNames(clientInfo.getClientName());
+        List<String> friends = this.bdFacade.getFriendNames(clientName);
         for(String friendName : friends) {
             //Para cada amigo, si está en el hashmap principal (es decir, conectado), se enviará:
             if(clients.containsKey(friendName)) {
                 //notificación de la desconexión del usuario:
-                clients.get(friendName).notifyDisconnection(clientInfo);
+                clients.get(friendName).notifyDisconnection(clientName);
             }
         }
     }

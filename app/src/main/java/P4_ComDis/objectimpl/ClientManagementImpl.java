@@ -58,7 +58,7 @@ public class ClientManagementImpl extends UnicastRemoteObject implements ClientM
     }
 
     @Override
-    public void notifyDisconnection(ClientManagementInterface loggedOutClient) throws RemoteException {
+    public void notifyDisconnection(String loggedOutClient) throws RemoteException {
         //Llamamos a este método que nos actualizará la lista de conectados:
         Platform.runLater( () -> {
             controller.updateNewDisconnect(loggedOutClient);

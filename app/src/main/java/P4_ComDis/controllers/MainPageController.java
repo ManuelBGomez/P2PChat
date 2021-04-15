@@ -138,19 +138,19 @@ public class MainPageController implements Initializable{
         }
     }
 
-    public void updateNewDisconnect(ClientManagementInterface disconnected){
+    public void updateNewDisconnect(String disconnected){
         //Se elimina el cliente que se desconecta:
-        try {
-            this.friendsConnected.remove(disconnected.getClientName());
-            //Buscamos entre los elementos de la lista de usuarios conectados y eliminamos el del usuario desconectado:
-            Node node = this.chatsInfo.get(disconnected.getClientName());
-            //El nodo correspondiente se borra de la lista, para que se deje de ver:
-            if(node != null){
-                userList.getChildren().remove(node);
-            }
-        } catch (IOException e) {
-            System.out.println("Error. No se ha podido mostrar correctamente la desconexión del cliente.");
-            e.printStackTrace();
+        this.friendsConnected.remove(disconnected);
+        //Buscamos entre los elementos de la lista de usuarios conectados y eliminamos el del usuario desconectado:
+        Node node = this.chatsInfo.get(disconnected);
+        //El nodo correspondiente se borra de la lista, para que se deje de ver:
+        if(node != null){
+            userList.getChildren().remove(node);
+        }
+        //Si está abierto el chat con ese usuario, se cierra:
+        if(controllerChat != null && controllerChat.nameTag.getText().equals(disconnected)) {
+            rightBox.getChildren().clear();
+            this.controllerChat = null;
         }
     }
 
@@ -162,7 +162,7 @@ public class MainPageController implements Initializable{
             rightBox.getChildren().clear();
             rightBox.getChildren().add(loader.load());
             VBox.setVgrow(rightBox.getChildren().get(0), Priority.ALWAYS);
-            loader.<ChatController>getController().setClientAndSenderInt(clientInt, client);
+            loader.<ChatController>getController().setValues(clientInt, client, this);
             //Guardamos controlador en chat privado:
             controllerChat = loader.<ChatController>getController();
             //Ponemos el de amistades y el de la cuenta a null (se ha cargado un chat encima):
@@ -411,5 +411,35 @@ public class MainPageController implements Initializable{
 
     public ResultType deleteAccount() throws RemoteException {
         return cm.unregister(this.user);
+    }
+
+    public void deleteFriendship(String friendName) {
+        //Se intenta borrar la amistad:
+        try {
+            switch(cm.deleteFriendship(this.user, friendName)) {
+                case DATABASE_ERROR:
+                    Dialogs.showError("Error", "Error al borrar la amistad",
+                                        "Fallo en la base de datos. Inténtelo de nuevo más tarde.");
+                    break;
+                case NOT_VALID:
+                    Dialogs.showError("Error", "Error al borrar la amistad",
+                                    "No se ha encontrado la amistad en la base de datos.");
+                    break;
+                case OK:
+                    //Se borra el amigo:
+                    this.updateNewDisconnect(friendName);
+                    break;
+                case UNAUTHORIZED:
+                    Dialogs.showError("Error", "Error al borrar la amistad",
+                                    "Usuario no autorizado para realizar este borrado.");
+                    break;
+                default:
+                    //No se debería devolver otro resultado.
+                    break;
+            }
+        } catch (RemoteException ex) {
+            //En caso de excepción remota, se avisa y se termina:
+            Dialogs.showError("Error", "Error en la conexión con el servidor", "Motivo: " + ex.getMessage() +  ". Saliendo...");
+        }
     }
 }

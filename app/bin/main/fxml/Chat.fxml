@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
@@ -19,18 +20,23 @@
    <children>
       <VBox style="-fx-background-color: #808080;" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
          <children>
-            <HBox alignment="CENTER_LEFT" maxHeight="75.0" minHeight="75.0" prefHeight="75.0" prefWidth="200.0" style="-fx-background-color: #393939;">
+            <AnchorPane maxHeight="75.0" minHeight="75.0" prefHeight="75.0" style="-fx-background-color: #353535;">
                <children>
-                  <Label fx:id="nameTag" text="Nombre" textFill="WHITE">
+                  <Label fx:id="nameTag" maxHeight="75.0" minHeight="75.0" prefHeight="75.0" text="Nombre" textFill="WHITE" AnchorPane.leftAnchor="20.0">
                      <font>
                         <Font name="System Bold" size="22.0" />
                      </font>
                   </Label>
+                  <Button layoutX="861.0" layoutY="18.0" mnemonicParsing="false" onAction="#btnDeleteFriendshipOnClick" styleClass="btn-style" stylesheets="@../css/style.css" text="Cancelar amistad" textFill="WHITE" AnchorPane.bottomAnchor="18.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="18.0">
+                     <font>
+                        <Font name="System Bold" size="20.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
                </children>
-               <padding>
-                  <Insets left="20.0" />
-               </padding>
-            </HBox>
+            </AnchorPane>
             <ScrollPane fx:id="scrollChatContent" fitToWidth="true" hbarPolicy="NEVER" styleClass="scroll-chat" stylesheets="@../css/style.css" VBox.vgrow="ALWAYS">
               <content>
                 <AnchorPane styleClass="chat-content" stylesheets="@../css/style.css">

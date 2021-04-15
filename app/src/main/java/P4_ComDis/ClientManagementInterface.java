@@ -12,7 +12,7 @@ public interface ClientManagementInterface extends Remote {
 
     public void notifyConnection(ClientManagementInterface newClient) throws RemoteException;
     
-    public void notifyDisconnection(ClientManagementInterface loggedOutClient) throws RemoteException;
+    public void notifyDisconnection(String loggedOutClient) throws RemoteException;
 
     public String getClientName() throws RemoteException;
 
