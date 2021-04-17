@@ -34,6 +34,7 @@ import javafx.util.Duration;
 public class MainPageController implements Initializable{
 
     //Atributos del fxml
+    public Label alertLabel;
     public Label userName;
     public VBox userList;
     public VBox rightBox;
@@ -68,6 +69,11 @@ public class MainPageController implements Initializable{
         chatsInfo = new HashMap<>();
         friendsConnected = new HashMap<>();
         messages = new HashMap<>();
+        receivedRequests = new ArrayList<>();
+        sentRequests = new ArrayList<>();
+
+        //Se apaga el aviso de solicitudes pendientes por defecto:
+        alertLabel.setVisible(false);
     }
 
     public void setValues(Stage primaryStage, ClientManagementImpl clientInfo, User user, ChatManagementInterface cm) {
@@ -101,6 +107,8 @@ public class MainPageController implements Initializable{
         //Asignamos los listados:
         this.friendsConnected = connectedClients;
         this.receivedRequests = receivedRequests;
+        //Si se han recibido solicitudes, se activa el icono de alerta:
+        this.checkAlert();
         this.sentRequests = sentRequests;
         //Vaciamos el contenido del scrollpane y vamos asignando nuevos elementos con los nuevos usuarios:
         try {
@@ -157,6 +165,8 @@ public class MainPageController implements Initializable{
             rightBox.getChildren().clear();
             this.controllerChat = null;
         }
+        //Eliminamos mensajes con esa persona (en caso de haberlos):
+        this.messages.remove(disconnected);
     }
 
     public void putChatScreen(ClientManagementInterface clientInt) {
@@ -259,6 +269,7 @@ public class MainPageController implements Initializable{
     public void updateNewRequest(String userName) {
         //Tomamos la lista de solicitudes y añadimos ésta:
         this.receivedRequests.add(userName);
+        this.checkAlert();
         //Si está abierto el controlador de la pestaña de amigos, se añade:
         if(this.controllerFriendships != null){
             this.controllerFriendships.addRequest(userName);
@@ -316,6 +327,8 @@ public class MainPageController implements Initializable{
                 case OK:
                     //En este caso se elimina la solicitud pendiente del usuario:
                     receivedRequests.remove(userName);
+                    //Se comprueba si hay más solicitudes:
+                    this.checkAlert();
                     return true;
                 case UNAUTHORIZED:
                     Dialogs.showError("Error", "Error al confirmar la solicitud", 
@@ -355,8 +368,10 @@ public class MainPageController implements Initializable{
             case OK:            
                 //Se elimina la solicitud recibida:
                 this.receivedRequests.remove(userName);
+                //Se comprueba si hay más para mantener la notificación:
+                this.checkAlert();
                 return true;
-            case UNAUTHORIZED:        
+            case UNAUTHORIZED:
                 Dialogs.showError("Error", "Error al confirmar la solicitud",
                                     "Usuario no autorizado a realizar la modificación.");
                 return false;
@@ -405,6 +420,8 @@ public class MainPageController implements Initializable{
     public void deleteReceivedRequest(String userName) {
         //Se actualiza la lista de solicitudes recibidas:
         this.receivedRequests.remove(userName);
+        //Se comprueba si hay más solicitudes para mantener el aviso.
+        this.checkAlert();
         //Si la pantalla de amigos está abierta, se notifica:
         if(controllerFriendships != null) {
             controllerFriendships.removeRecReq(userName);
@@ -465,5 +482,15 @@ public class MainPageController implements Initializable{
         } 
         //Se añade:
         this.messages.get(user).add(message);
+    }
+
+    private void checkAlert(){
+        //Si hay solicitudes, se activa la etiqueta con el aviso:
+        if(!this.receivedRequests.isEmpty()){
+            alertLabel.setVisible(true);
+        } else {
+            //Si no, permanece desactivado:
+            alertLabel.setVisible(false);
+        }
     }
 }

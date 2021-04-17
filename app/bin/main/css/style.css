@@ -136,3 +136,11 @@
     -fx-border-width: 0px 0px 0px 3px;
     border-width: 0px 0px 0px 3px;
 }
+
+.notif-friendship{
+    -fx-background-color: red;
+    background-color: red;
+    -fx-border-radius: 50%;
+    -fx-background-radius: 50%;
+    border-radius: 50%;
+}

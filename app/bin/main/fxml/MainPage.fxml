@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
@@ -39,6 +40,14 @@
                            <font>
                               <Font name="System Bold" size="20.0" />
                            </font>
+                        </Label>
+                        <Label fx:id="alertLabel" styleClass="notif-friendship" stylesheets="@../css/style.css" text="!" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold" size="20.0" />
+                           </font>
+                           <padding>
+                              <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                           </padding>
                         </Label>
                      </children>
                   </HBox>

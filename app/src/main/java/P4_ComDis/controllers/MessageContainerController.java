@@ -30,12 +30,12 @@ public class MessageContainerController implements Initializable{
         //Si send vale true, quiere decir que el mensaje es enviado y no recibido:
         if(!send) {
             //RECIBIDO: Colocamos mensaje a la izquierda y le damos fondo blanco y radio adecuado.
-            this.userName.setText(clientInt.getClientName());
+            this.userName.setText(message.getUserName());
             messagePane.setStyle("-fx-background-color: white; -fx-background-radius: 0px 10px 10px 10px;");
             AnchorPane.setLeftAnchor(messagePane, 0.0);
         } else {
             //ENVIADO: Se mantiene estilo original y se coloca a la derecha.
-            this.userName.setText(message.getClientInt().getClientName());
+            this.userName.setText(message.getUserName());
             AnchorPane.setRightAnchor(messagePane, 0.0);
         }
     }

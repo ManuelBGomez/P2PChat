@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import P4_ComDis.ClientManagementInterface;
+import P4_ComDis.aux.Dialogs;
 import P4_ComDis.model.dataClasses.Message;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -15,6 +16,8 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -55,8 +58,8 @@ public class ChatController implements Initializable {
         nameTag.setText(clientInt.getClientName());
         //Cargamos todos los mensajes:
         for(Message message: messages){
-            //Es el propio si el destinatario no es este cliente, si no es mensaje recibido del otro cliente.
-            this.addMessage(message, !message.getClientInt().equals(clientInt));
+            //Es el propio si el que envía es este cliente. Si es el otro usuario (el indicado por la tag), será recibido:
+            this.addMessage(message, !message.getUserName().equals(nameTag.getText()));
         }
     }
 
@@ -79,24 +82,41 @@ public class ChatController implements Initializable {
 
 
     public void btnSendOnClick(MouseEvent event){
-        //Se procederá al envío del mensaje (si no salta una excepción):
-        try {
-            Message message = new Message(messageText.getText(), senderInt);
-            clientInt.sendMessage(message);
-            //Además, se cargará el mensaje:
-            this.addMessage(message, true);
-            //Se añade al registro:
-            controllerPrincipal.addMessage(nameTag.getText(), message);
-            //Vaciamos el textField:
-            messageText.setText("");
-        } catch (RemoteException e) {
-            System.out.println("Error on sending: " + e.getMessage());
-        }
+        send();
     }
 
     public void btnDeleteFriendshipOnClick(ActionEvent event){
-        //Llamamos al controlador principal para gestionar el borrado:
-        this.controllerPrincipal.deleteFriendship(nameTag.getText());
+        //Pedimos confirmación
+        Boolean result = Dialogs.showConfirmation("Confirmación borrado", 
+                                                                "¿Estás seguro que deseas borrar la amistad?", "");
+        if(result){
+            //Llamamos al controlador principal para gestionar el borrado:
+            this.controllerPrincipal.deleteFriendship(nameTag.getText());
+        }
     }
-    
+ 
+    public void onEnter(KeyEvent ke) {
+        if (ke.getCode().equals(KeyCode.ENTER)) {
+            send();
+        }
+    }
+
+    private void send(){
+        //Se procederá al envío del mensaje (si no salta una excepción Y SI EL MENSAJE NO ESTÁ VACÍO):
+        if(!messageText.getText().isEmpty()) {
+            try {
+                Message message = new Message(messageText.getText(), senderInt);
+                clientInt.sendMessage(message);
+                //Además, se cargará el mensaje:
+                this.addMessage(message, true);
+                //Se añade al registro:
+                controllerPrincipal.addMessage(nameTag.getText(), message);
+                //Vaciamos el textField:
+                messageText.setText("");
+            } catch (RemoteException e) {
+                System.out.println("Error on sending: " + e.getMessage());
+            }
+        }
+    }
+
 }

@@ -47,8 +47,8 @@ public class AccessController implements Initializable {
         ChangeListener<String> listText = new ChangeListener<String>(){
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                //Comprobamos que ambos campos tengan algo
-                if(!userName.getText().isEmpty() && !password.getText().isEmpty()){
+                //Comprobamos que ambos campos tengan algo (el nombre de usuario mínimo 5 caracteres)
+                if((userName.getText().length() >= 4) && !password.getText().isEmpty()){
                     //Si es así, se activan botones:
                     btnLogin.setDisable(false);
                     btnRegister.setDisable(false);

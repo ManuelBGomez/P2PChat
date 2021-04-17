@@ -86,26 +86,29 @@ public class FriendshipsController implements Initializable{
     }
 
     private void requestSearch(){
-        //Llamamos al controlador principal para que se encargue de la consulta:
-        this.addList = new HashMap<>();
-        try {
-            List<String> result = this.controllerPrincipal.performSearch(searchText.getText());
-            usersAddList.getChildren().clear();
-            for(String name: result){
-                //Para cada usuario, creamos un elemento de interfaz que contenga su nombre y un botón para añadir al amigo:
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/FriendInfo.fxml"));
-                //Cargamos el nodo:
-                Node nodeAdd = loader.load();
-                usersAddList.getChildren().add(nodeAdd);
-                this.addList.put(name, nodeAdd);
-                loader.<FriendInfoController>getController().setValues(name, FriendRequestType.SEARCH, this);
+        //Comprobamos que la búsqueda tenga una longitud mínima:
+        if(searchText.getText().length() >= 4){
+            //Llamamos al controlador principal para que se encargue de la consulta:
+            this.addList = new HashMap<>();
+            try {
+                List<String> result = this.controllerPrincipal.performSearch(searchText.getText());
+                usersAddList.getChildren().clear();
+                for(String name: result){
+                    //Para cada usuario, creamos un elemento de interfaz que contenga su nombre y un botón para añadir al amigo:
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/FriendInfo.fxml"));
+                    //Cargamos el nodo:
+                    Node nodeAdd = loader.load();
+                    usersAddList.getChildren().add(nodeAdd);
+                    this.addList.put(name, nodeAdd);
+                    loader.<FriendInfoController>getController().setValues(name, FriendRequestType.SEARCH, this);
+                }
+            } catch(RemoteException ex){
+                //Si se captura excepción remota se avisa de ello:
+                Dialogs.showError("Error", "Fallo al comunicarse con el servidor", ex.getMessage());
+            } catch (IOException ex) {
+                //También si hay problemas al abrir la pantalla
+                System.out.println("Error iniciando la pantalla: " + ex.getMessage());
             }
-        } catch(RemoteException ex){
-            //Si se captura excepción remota se avisa de ello:
-            Dialogs.showError("Error", "Fallo al comunicarse con el servidor", ex.getMessage());
-        } catch (IOException ex) {
-            //También si hay problemas al abrir la pantalla
-            System.out.println("Error iniciando la pantalla: " + ex.getMessage());
         }
     }
 

@@ -32,7 +32,7 @@
                   </Label>
                   <HBox alignment="CENTER" prefHeight="62.0" prefWidth="980.0" style="-fx-background-color: white;">
                      <children>
-                        <TextField fx:id="searchText" onKeyPressed="#onEnter" prefHeight="47.0" prefWidth="940.0" promptText="Introduce un nombre de usuario o parte..." style="-fx-border-color: white; -fx-background-color: white;" HBox.hgrow="ALWAYS">
+                        <TextField fx:id="searchText" onKeyPressed="#onEnter" prefHeight="47.0" prefWidth="940.0" promptText="Introduce un nombre de usuario o parte (mínimo: 4 caracteres)..." style="-fx-border-color: white; -fx-background-color: white;" HBox.hgrow="ALWAYS">
                            <font>
                               <Font size="18.0" />
                            </font>

@@ -32,7 +32,7 @@ public final class DAOUser extends AbstractDAO {
         //A partir de aquí, intentamos hacer la consulta:
         try {
             //Preparamos consulta:
-            stmUsers = con.prepareStatement("SELECT * FROM user WHERE lower(userName) = lower(?) AND password = sha2(?, 256)");
+            stmUsers = con.prepareStatement("SELECT * FROM user WHERE userName = ? AND password = sha2(?, 256)");
             //Completamos los parámetros con interrogantes:
             stmUsers.setString(1, user.getUsername());
             stmUsers.setString(2, user.getPassword());
@@ -113,7 +113,7 @@ public final class DAOUser extends AbstractDAO {
         //A partir de aquí, intentamos hacer la consulta:
         try {
             //Preparamos consulta:
-            stmUsers = con.prepareStatement("SELECT * FROM user WHERE lower(userName) = lower(?) AND password = sha2(?, 256)");
+            stmUsers = con.prepareStatement("SELECT * FROM user WHERE userName = ? AND password = sha2(?, 256)");
             //Completamos los parámetros con interrogantes:
             stmUsers.setString(1, user.getUsername());
             stmUsers.setString(2, user.getPassword());
@@ -237,7 +237,7 @@ public final class DAOUser extends AbstractDAO {
         //A partir de aquí, intentamos hacer la consulta:
         try {
             //Preparamos consulta:
-            stmUsers = con.prepareStatement("SELECT * FROM user WHERE lower(userName) = lower(?) AND password = sha2(?, 256)");
+            stmUsers = con.prepareStatement("SELECT * FROM user WHERE userName = ? AND password = sha2(?, 256)");
             //Completamos los parámetros con interrogantes:
             stmUsers.setString(1, user.getUsername());
             stmUsers.setString(2, user.getPassword());
@@ -306,7 +306,7 @@ public final class DAOUser extends AbstractDAO {
         //A partir de aquí, intentamos hacer la consulta:
         try {
             //Preparamos consulta:
-            stmUsers = con.prepareStatement("SELECT * FROM user WHERE lower(userName) = lower(?) AND password = sha2(?, 256)");
+            stmUsers = con.prepareStatement("SELECT * FROM user WHERE userName = ? AND password = sha2(?, 256)");
             //Completamos los parámetros con interrogantes:
             stmUsers.setString(1, user.getUsername());
             stmUsers.setString(2, user.getPassword());
@@ -364,7 +364,7 @@ public final class DAOUser extends AbstractDAO {
         //A partir de aquí, intentamos hacer la consulta:
         try {
             //Preparamos consulta:
-            stmUsers = con.prepareStatement("SELECT * FROM user WHERE lower(userName) = lower(?) AND password = sha2(?, 256)");
+            stmUsers = con.prepareStatement("SELECT * FROM user WHERE userName = ? AND password = sha2(?, 256)");
             //Completamos los parámetros con interrogantes:
             stmUsers.setString(1, user.getUsername());
             stmUsers.setString(2, user.getPassword());

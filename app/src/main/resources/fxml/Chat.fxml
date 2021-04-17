@@ -55,7 +55,7 @@
                <children>
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: white;" HBox.hgrow="ALWAYS">
                      <children>
-                        <TextField fx:id="messageText" prefHeight="47.0" prefWidth="940.0" promptText="Escribe un mensaje..." style="-fx-border-color: white; -fx-background-color: white;" HBox.hgrow="ALWAYS">
+                        <TextField fx:id="messageText" onKeyPressed="#onEnter" prefHeight="47.0" prefWidth="940.0" promptText="Escribe un mensaje..." style="-fx-border-color: white; -fx-background-color: white;" HBox.hgrow="ALWAYS">
                            <font>
                               <Font size="18.0" />
                            </font>
