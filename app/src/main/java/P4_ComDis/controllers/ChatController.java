@@ -3,11 +3,11 @@ package P4_ComDis.controllers;
 import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import P4_ComDis.ClientManagementInterface;
+import P4_ComDis.model.dataClasses.Message;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -46,17 +46,22 @@ public class ChatController implements Initializable {
 
 
     public void setValues(ClientManagementInterface clientInt, ClientManagementInterface senderInt,
-                            MainPageController controllerPrincipal) throws RemoteException {
+                            MainPageController controllerPrincipal, List<Message> messages) throws RemoteException {
         //Asignamos la interfaz del cliente:
         this.clientInt = clientInt;
         this.senderInt = senderInt;
         this.controllerPrincipal = controllerPrincipal;
         //Establecemos el texto de la etiqueta con el nombre:
         nameTag.setText(clientInt.getClientName());
+        //Cargamos todos los mensajes:
+        for(Message message: messages){
+            //Es el propio si el destinatario no es este cliente, si no es mensaje recibido del otro cliente.
+            this.addMessage(message, !message.getClientInt().equals(clientInt));
+        }
     }
 
 
-    public void addMessage(String message, ClientManagementInterface clientInt, String time, boolean send) {
+    public void addMessage(Message message, boolean send) {
         //Se crea un nuevo mensaje a partir de su fxml:
         try {
             //Asignamos ubicación:
@@ -65,7 +70,7 @@ public class ChatController implements Initializable {
             Node msg = loader.load();
             VBox.setVgrow(msg, Priority.ALWAYS);
             vBoxMessages.getChildren().add(msg);
-            loader.<MessageContainerController>getController().loadMessage(message, clientInt, senderInt, time, send);;
+            loader.<MessageContainerController>getController().loadMessage(message, clientInt, send);
         } catch (IOException ex){
             System.out.println("Error loading message: " + ex.getMessage());
             ex.printStackTrace();
@@ -74,14 +79,14 @@ public class ChatController implements Initializable {
 
 
     public void btnSendOnClick(MouseEvent event){
-        //Se utilizará un simpledateformat para el formato de la fecha a enviar:
-        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
         //Se procederá al envío del mensaje (si no salta una excepción):
         try {
-            String sendDate = format.format(new Date(System.currentTimeMillis()));
-            clientInt.sendMessage(messageText.getText(), senderInt, sendDate);
+            Message message = new Message(messageText.getText(), senderInt);
+            clientInt.sendMessage(message);
             //Además, se cargará el mensaje:
-            this.addMessage(messageText.getText(), clientInt, sendDate, true);
+            this.addMessage(message, true);
+            //Se añade al registro:
+            controllerPrincipal.addMessage(nameTag.getText(), message);
             //Vaciamos el textField:
             messageText.setText("");
         } catch (RemoteException e) {

@@ -8,8 +8,10 @@ import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
 import P4_ComDis.ChatManagementInterface;
+import P4_ComDis.ClientInternalMgInterface;
 import P4_ComDis.aux.Dialogs;
 import P4_ComDis.model.dataClasses.User;
+import P4_ComDis.objectimpl.ClientInternalMgImpl;
 import P4_ComDis.objectimpl.ClientManagementImpl;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -103,36 +105,36 @@ public class AccessController implements Initializable {
             //demás clientes con los que nos comuniquemos)
             //Vamos creando ya la interfaz cliente (sin nada):    
             this.cImpl = new ClientManagementImpl(this.mainController, user.getUsername());
+            ClientInternalMgInterface imImpl = new ClientInternalMgImpl(this.mainController);
             //Se hace el login y se evalúa el resultado obtenido:
-            switch(cmInt.loginToChat(user, this.cImpl)){
-            case ALREADY_CONNECTED:
-                //Usuario ya conectado, se avisa (y se oculta la label de error por si se abriese antes):
-                labelError.setVisible(false);
-                Dialogs.showError("Error", "Error iniciando sesión", "Usuario con la sesión ya iniciada.");
-                break;
-            case DATABASE_ERROR:
-                //Error en la DB, se avisa (y se oculta la label de error por si se abriese antes):
-                labelError.setVisible(false);
-                Dialogs.showError("Error", "Error iniciando sesión", "Error en la base de datos, por favor, inténtelo de nuevo más tarde.");
-                break;
-            case OK:
-                //Establecemos parámetros de la escena (cargada ya con anterioridad)
-                primaryStage.setScene(this.nextScene);
-                //Definimos dimensiones mínimas:
-                primaryStage.setMinHeight(720);
-                primaryStage.setMinWidth(1280);
-                //Asignamos los valores pertinentes, pues a partir de ahora trabajaremos en esa pantalla:
-                this.mainController.setValues(this.primaryStage, this.cImpl, user, this.cmInt);
-                break;
-            case UNAUTHORIZED:
-                //Se abre el diálogo oculto:
-                labelError.setText("Credenciales erróneas");
-                labelError.setVisible(true);
-                break;
-            default:
-                //No hay más casos que pueden salir.
-                break;
-                
+            switch(cmInt.loginToChat(user, this.cImpl, imImpl)){
+                case ALREADY_CONNECTED:
+                    //Usuario ya conectado, se avisa (y se oculta la label de error por si se abriese antes):
+                    labelError.setVisible(false);
+                    Dialogs.showError("Error", "Error iniciando sesión", "Usuario con la sesión ya iniciada.");
+                    break;
+                case DATABASE_ERROR:
+                    //Error en la DB, se avisa (y se oculta la label de error por si se abriese antes):
+                    labelError.setVisible(false);
+                    Dialogs.showError("Error", "Error iniciando sesión", "Error en la base de datos, por favor, inténtelo de nuevo más tarde.");
+                    break;
+                case OK:
+                    //Establecemos parámetros de la escena (cargada ya con anterioridad)
+                    primaryStage.setScene(this.nextScene);
+                    //Definimos dimensiones mínimas:
+                    primaryStage.setMinHeight(720);
+                    primaryStage.setMinWidth(1280);
+                    //Asignamos los valores pertinentes, pues a partir de ahora trabajaremos en esa pantalla:
+                    this.mainController.setValues(this.primaryStage, this.cImpl, user, this.cmInt);
+                    break;
+                case UNAUTHORIZED:
+                    //Se abre el diálogo oculto:
+                    labelError.setText("Credenciales erróneas");
+                    labelError.setVisible(true);
+                    break;
+                default:
+                    //No hay más casos que pueden salir.
+                    break;
             }
         } catch (RemoteException e) {
             //Si salta una remoteException, avisamos de ella y se sale:
@@ -154,32 +156,32 @@ public class AccessController implements Initializable {
             //demás clientes con los que nos comuniquemos)
             //Vamos creando ya la interfaz cliente (sin nada):    
             this.cImpl = new ClientManagementImpl(this.mainController, user.getUsername());
-            
+            ClientInternalMgInterface imImpl = new ClientInternalMgImpl(this.mainController);
+
             //Se hace el registro y se evalúa el resultado obtenido:
-            switch(cmInt.registerInChat(user, this.cImpl)){
-            case DATABASE_ERROR:
-                //Error en la DB, se avisa (y se oculta la label de error por si se abriese antes):
-                labelError.setVisible(false);
-                Dialogs.showError("Error", "Error en registro", "Error en la base de datos, por favor, inténtelo de nuevo más tarde.");
-                break;
-            case OK:
-                //Establecemos parámetros de la escena (cargada ya con anterioridad)
-                primaryStage.setScene(this.nextScene);
-                //Definimos dimensiones mínimas:
-                primaryStage.setMinHeight(720);
-                primaryStage.setMinWidth(1280);
-                //Asignamos los valores pertinentes, pues a partir de ahora trabajaremos en esa pantalla:
-                this.mainController.setValues(this.primaryStage, this.cImpl, user, this.cmInt);
-                break;
-            case UNAUTHORIZED:
-                //Se abre el diálogo oculto:
-                labelError.setText("Usuario ya existente");
-                labelError.setVisible(true);
-                break;
-            default:
-                //No hay más casos que pueden salir.
-                break;
-                
+            switch(cmInt.registerInChat(user, this.cImpl, imImpl)){
+                case DATABASE_ERROR:
+                    //Error en la DB, se avisa (y se oculta la label de error por si se abriese antes):
+                    labelError.setVisible(false);
+                    Dialogs.showError("Error", "Error en registro", "Error en la base de datos, por favor, inténtelo de nuevo más tarde.");
+                    break;
+                case OK:
+                    //Establecemos parámetros de la escena (cargada ya con anterioridad)
+                    primaryStage.setScene(this.nextScene);
+                    //Definimos dimensiones mínimas:
+                    primaryStage.setMinHeight(720);
+                    primaryStage.setMinWidth(1280);
+                    //Asignamos los valores pertinentes, pues a partir de ahora trabajaremos en esa pantalla:
+                    this.mainController.setValues(this.primaryStage, this.cImpl, user, this.cmInt);
+                    break;
+                case UNAUTHORIZED:
+                    //Se abre el diálogo oculto:
+                    labelError.setText("Usuario ya existente");
+                    labelError.setVisible(true);
+                    break;
+                default:
+                    //No hay más casos que pueden salir.
+                    break;
             }
         } catch (RemoteException e) {
             //Si salta una remoteException, avisamos de ella y se sale:

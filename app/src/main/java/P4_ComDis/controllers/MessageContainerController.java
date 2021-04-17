@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
 import P4_ComDis.ClientManagementInterface;
+import P4_ComDis.model.dataClasses.Message;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
@@ -22,10 +23,10 @@ public class MessageContainerController implements Initializable{
 
     }
 
-    public void loadMessage(String message, ClientManagementInterface clientInt, ClientManagementInterface senderInt, String time, boolean send) throws RemoteException{
+    public void loadMessage(Message message, ClientManagementInterface clientInt, boolean send) throws RemoteException{
         //Llenamos los campos de texto:
-        this.messageContent.setText(message);
-        this.time.setText(time);
+        this.messageContent.setText(message.getMessageContent());
+        this.time.setText(message.getDate());
         //Si send vale true, quiere decir que el mensaje es enviado y no recibido:
         if(!send) {
             //RECIBIDO: Colocamos mensaje a la izquierda y le damos fondo blanco y radio adecuado.
@@ -34,7 +35,7 @@ public class MessageContainerController implements Initializable{
             AnchorPane.setLeftAnchor(messagePane, 0.0);
         } else {
             //ENVIADO: Se mantiene estilo original y se coloca a la derecha.
-            this.userName.setText(senderInt.getClientName());
+            this.userName.setText(message.getClientInt().getClientName());
             AnchorPane.setRightAnchor(messagePane, 0.0);
         }
     }

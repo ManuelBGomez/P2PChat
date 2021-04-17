@@ -9,11 +9,12 @@ import P4_ComDis.model.dataClasses.User;
 
 public interface ChatManagementInterface extends Remote {
 
-    public ResultType loginToChat(User user, ClientManagementInterface clientInfo) throws RemoteException;
+    public ResultType loginToChat(User user, ClientManagementInterface clientInfo, ClientInternalMgInterface clientInternal) 
+        throws RemoteException;
 
     public void logoutFromChat(User user) throws RemoteException;
 
-    public ResultType registerInChat(User user, ClientManagementInterface clientInfo) 
+    public ResultType registerInChat(User user, ClientManagementInterface clientInfo, ClientInternalMgInterface clientInternal) 
         throws RemoteException;
 
     public List<String> searchFriends(User user, String pattern) throws RemoteException;

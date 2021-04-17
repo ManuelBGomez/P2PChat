@@ -3,6 +3,7 @@ package P4_ComDis.controllers;
 import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import org.controlsfx.control.Notifications;
 import P4_ComDis.ChatManagementInterface;
 import P4_ComDis.ClientManagementInterface;
 import P4_ComDis.aux.Dialogs;
+import P4_ComDis.model.dataClasses.Message;
 import P4_ComDis.model.dataClasses.ResultType;
 import P4_ComDis.model.dataClasses.User;
 import P4_ComDis.objectimpl.ClientManagementImpl;
@@ -58,11 +60,14 @@ public class MainPageController implements Initializable{
     private List<String> receivedRequests;
     //Lista de peticiones de amistad enviadas (sin confirmar):
     private List<String> sentRequests;
+    //Lista de chats con todos los usuarios (almacén temporal de mensajes):
+    private HashMap<String, List<Message>> messages;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         chatsInfo = new HashMap<>();
         friendsConnected = new HashMap<>();
+        messages = new HashMap<>();
     }
 
     public void setValues(Stage primaryStage, ClientManagementImpl clientInfo, User user, ChatManagementInterface cm) {
@@ -162,7 +167,9 @@ public class MainPageController implements Initializable{
             rightBox.getChildren().clear();
             rightBox.getChildren().add(loader.load());
             VBox.setVgrow(rightBox.getChildren().get(0), Priority.ALWAYS);
-            loader.<ChatController>getController().setValues(clientInt, client, this);
+            //Se carga la información (los mensajes solo si existen)
+            loader.<ChatController>getController().setValues(clientInt, client, this, 
+                messages.containsKey(clientInt.getClientName()) ? messages.get(clientInt.getClientName()) : new ArrayList<>());
             //Guardamos controlador en chat privado:
             controllerChat = loader.<ChatController>getController();
             //Ponemos el de amistades y el de la cuenta a null (se ha cargado un chat encima):
@@ -174,11 +181,18 @@ public class MainPageController implements Initializable{
         }
     }
 
-    public void loadRecievedMessage(String message, ClientManagementInterface clientInt, String time) throws RemoteException {
+    public void loadRecievedMessage(Message message) throws RemoteException {
+        //Añadimos el mensaje al hashmap:
+        if(!this.messages.containsKey(message.getClientInt().getClientName())) {
+            //Se crea la entrada del hashmap si no existia
+            this.messages.put(message.getClientInt().getClientName(), new ArrayList<>());
+        } 
+        //Se añade:
+        this.messages.get(message.getClientInt().getClientName()).add(message);
         //Comprobamos si hay un chat abierto y si es del usuario que se pasa:
-        if(controllerChat != null && controllerChat.getClientInt().equals(clientInt)){
+        if(controllerChat != null && controllerChat.getClientInt().equals(message.getClientInt())){
             //Entonces se mete mensaje en el chat:
-            controllerChat.addMessage(message, clientInt, time, false);
+            controllerChat.addMessage(message, false);
         } else {
             //Si no está abierto el chat, se abrirá una notificación:
             Image img = new Image("/img/comment.png");
@@ -187,8 +201,8 @@ public class MainPageController implements Initializable{
             imv.setFitWidth(50);
             //Se emplea para ello la clase notifications:
             Notifications notfBuilder = Notifications.create()
-                .title("Mensaje entrante de: " + clientInt.getClientName())
-                .text(message)
+                .title("Mensaje entrante de: " + message.getClientInt().getClientName())
+                .text(message.getMessageContent())
                 .graphic(imv)
                 .hideAfter(Duration.seconds(5))
                 .darkStyle()
@@ -441,5 +455,15 @@ public class MainPageController implements Initializable{
             //En caso de excepción remota, se avisa y se termina:
             Dialogs.showError("Error", "Error en la conexión con el servidor", "Motivo: " + ex.getMessage() +  ". Saliendo...");
         }
+    }
+
+    public void addMessage(String user, Message message) {
+        //Añadimos el mensaje al hashmap:
+        if(!this.messages.containsKey(user)) {
+            //Se crea la entrada del hashmap si no existia
+            this.messages.put(user, new ArrayList<>());
+        } 
+        //Se añade:
+        this.messages.get(user).add(message);
     }
 }

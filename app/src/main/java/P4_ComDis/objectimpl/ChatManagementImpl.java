@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import P4_ComDis.ChatManagementInterface;
+import P4_ComDis.ClientInternalMgInterface;
 import P4_ComDis.ClientManagementInterface;
 import P4_ComDis.model.dataClasses.ResultType;
 import P4_ComDis.model.dataClasses.User;
@@ -14,30 +15,32 @@ import P4_ComDis.model.exceptions.DatabaseException;
 
 public class ChatManagementImpl extends UnicastRemoteObject implements ChatManagementInterface {
 
-    private static final long serialVersionUID = 1L;
-
     //Atributo: la lista de clientes conectados:
-    private HashMap<String, ClientManagementInterface> clients;
+    private HashMap<String, ClientManagementInterface> clientsShared;
+    private HashMap<String, ClientInternalMgInterface> clientsInternal;
     //Referencia a la fachada de la base de datos:
     private BDFacade bdFacade;
 
     public ChatManagementImpl() throws RemoteException {
         super();
         this.bdFacade = new BDFacade();
-        this.clients = new HashMap<>();
+        this.clientsShared = new HashMap<>();
+        this.clientsInternal = new HashMap<>();
     }
     
     @Override
-    public ResultType loginToChat(User user, ClientManagementInterface clientInfo) throws RemoteException {
+    public ResultType loginToChat(User user, ClientManagementInterface clientInfo, ClientInternalMgInterface clientInternal) 
+        throws RemoteException {
         //Intentamos hacer el login:
         try {
             bdFacade.login(user);
-            //Añadimos la interfaz del cliente si el resultado ha sido satisfactorio:
-            clients.put(user.getUsername(), clientInfo);
+            //Añadimos las interfaces del cliente si el resultado ha sido satisfactorio:
+            clientsShared.put(user.getUsername(), clientInfo);
+            clientsInternal.put(user.getUsername(), clientInternal);
             //Habrá que notificar al cliente de los usuarios conectados, y a todos sus amigos de la conexión:
             System.out.println("Cliente " + user.getUsername() + " ha iniciado sesión");
             //Desde aqui se procederá a la notificación:
-            this.notifyClientsOnConnect(clientInfo);
+            this.notifyClientsOnConnect(user.getUsername(), clientInfo, clientInternal);
             return ResultType.OK;
         } catch(DatabaseException ex) {
             return ex.getResultType();
@@ -50,11 +53,12 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
         try{
             bdFacade.logout(user);
             //Se notifica el cierre de sesión correspondiente (si todo es correcto)
-            if(clients.containsKey(user.getUsername())){
+            if(clientsShared.containsKey(user.getUsername())){
                 //En principio este if se debería cumplir, aunque en todo caso se avisaría si no fuese así.
                 this.notifyClientsOnDisconnect(user.getUsername());
-                //Se elimina el cliente del hashmap:
-                clients.remove(user.getUsername());            
+                //Se elimina el cliente de los hashmap:
+                clientsShared.remove(user.getUsername());            
+                clientsInternal.remove(user.getUsername());            
                 System.out.println("Cliente " + user.getUsername() + " ha cerrado sesión");
             } else {
                 System.out.println("Problema en desconexión del usuario: no se encuentra.");
@@ -67,13 +71,15 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
     }
 
     @Override
-    public ResultType registerInChat(User user, ClientManagementInterface clientInfo) throws RemoteException {
+    public ResultType registerInChat(User user, ClientManagementInterface clientInfo, ClientInternalMgInterface clientInternal) throws RemoteException {
         //Trataremos de registrar al usuario:
         try {
             bdFacade.register(user);
             //Si el método finaliza correctamente, entonces hacemos las mismas acciones que con un usuario normal:
-            //Añadimos la interfaz del cliente si el resultado ha sido satisfactorio:
-            clients.put(user.getUsername(), clientInfo);
+            //Añadimos las interfaces del cliente si el resultado ha sido satisfactorio:
+            clientsShared.put(user.getUsername(), clientInfo);
+            clientsInternal.put(user.getUsername(), clientInternal);
+            //Se avisa del registro:
             System.out.println("Cliente " + user.getUsername() + " registrado");
             //Eso sí, no se revisan las amistades, pues la cuenta acaba de crearse, así que no tiene sentido añadir nada.
             return ResultType.OK;
@@ -95,8 +101,8 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
             //Se intenta enviar la petición de amistad:
             bdFacade.sendRequest(user, friendName);
             //Se notifica al usuario de la petición recibida (si está conectado):
-            if(clients.containsKey(friendName)){
-                clients.get(friendName).notifyNewRequest(user.getUsername());
+            if(clientsInternal.containsKey(friendName)){
+                clientsInternal.get(friendName).notifyNewRequest(user.getUsername());
             }
             //Se devuelve estado correcto:
             return ResultType.OK;
@@ -113,11 +119,11 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
             //Si se acepta, se notifica a ambos usuarios de la conexión del otro:
             bdFacade.acceptRequest(user, friendName);
             //Se comprueba, por si acaso, si está el cliente conectado:
-            if(clients.containsKey(friendName)){
+            if(clientsInternal.containsKey(friendName)){
                 //En ese caso procederemos a notificar uno al otro:
-                clients.get(friendName).notifyConfirmation(clients.get(user.getUsername()));
+                clientsInternal.get(friendName).notifyConfirmation(clientsShared.get(user.getUsername()));
                 //Se le notifica también la conexión:
-                clients.get(user.getUsername()).notifyConnection(clients.get(friendName));
+                clientsInternal.get(user.getUsername()).notifyConnection(clientsShared.get(friendName));
             }
             //Se devuelve un OK:
             return ResultType.OK;
@@ -133,9 +139,9 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
             //Se borra la amistad: la solicitud es rechazada:
             bdFacade.deleteFriendship(user, friendName);
             //Si sigue correctamente, podemos notificar al cliente correspondiente del rechazo:
-            if(clients.containsKey(friendName)){
+            if(clientsInternal.containsKey(friendName)){
                 //Como no se llegaron a añadir los usuarios, no hay que notificar nada más:
-                clients.get(friendName).notifyRejection(user.getUsername());
+                clientsInternal.get(friendName).notifyRejection(user.getUsername());
             }
             return ResultType.OK;
         } catch (DatabaseException ex) {
@@ -150,9 +156,9 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
             //Se borra la amistad: la solicitud es rechazada:
             bdFacade.deleteFriendship(user, friendName);
             //Si sigue correctamente, podemos notificar al cliente correspondiente si está conectado:
-            if(clients.containsKey(friendName)){
+            if(clientsInternal.containsKey(friendName)){
                 //Como no se llegaron a añadir los usuarios, no hay que notificar nada más que la cancelación de la solicitud:
-                clients.get(friendName).notifyCancelledRequest(user.getUsername());
+                clientsInternal.get(friendName).notifyCancelledRequest(user.getUsername());
             }
             return ResultType.OK;
         } catch (DatabaseException ex) {
@@ -167,9 +173,9 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
             //Borramos la amistad
             bdFacade.deleteFriendship(user, friendName);
             //Notificamos desconexión del usuario:
-            if(clients.containsKey(friendName)){
+            if(clientsInternal.containsKey(friendName)){
                 //Se notifica la "desconexión" (deja de estar disponible el cliente - cancelada la amistad):
-                clients.get(friendName).notifyDisconnection(user.getUsername());
+                clientsInternal.get(friendName).notifyDisconnection(user.getUsername());
             }
             //Devolvemos resultado OK:
             return ResultType.OK;
@@ -201,13 +207,14 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
             //Si se ha hecho el borrado, se notifica de la desconexión a las amistades:
             for(String friendName : friends) {
                 //Para cada amigo, si está en el hashmap principal (es decir, conectado), se enviará:
-                if(clients.containsKey(friendName)) {
+                if(clientsInternal.containsKey(friendName)) {
                     //notificación de la desconexión del usuario:
-                    clients.get(friendName).notifyDisconnection(user.getUsername());
+                    clientsInternal.get(friendName).notifyDisconnection(user.getUsername());
                 }
             }
-            //Se elimina del hashmap el usuario:
-            clients.remove(user.getUsername());
+            //Se elimina de los hashmap el usuario:
+            clientsInternal.remove(user.getUsername());
+            clientsShared.remove(user.getUsername());
             //Se devuelve un estado ok:
             return ResultType.OK;
         } catch (DatabaseException e) {
@@ -215,27 +222,28 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
         }
     }
 
-    private void notifyClientsOnConnect(ClientManagementInterface clientInfo) throws RemoteException{
+    private void notifyClientsOnConnect(String clientName, ClientManagementInterface clientInfo,
+        ClientInternalMgInterface clientInternal) throws RemoteException{
         //Se debe enviar al cliente que corresponde el listado completo de sus amigos y, además, enviar
         //a todos los clientes amigos la notificación de conexión del cliente.
         //Lo primero es recuperar la lista de amigos:
-        List<String> friends = this.bdFacade.getFriendNames(clientInfo.getClientName());
+        List<String> friends = this.bdFacade.getFriendNames(clientName);
         HashMap<String, ClientManagementInterface> clFriends = new HashMap<>();
         //Los resultados se guardarán en un hashmap:
         for(String friendName : friends) {
             //Para cada amigo, si está en el hashmap principal (es decir, conectado), se enviará:
-            if(clients.containsKey(friendName)) {
+            if(clientsInternal.containsKey(friendName)) {
                 //Solo hay un posible cliente con esa clave. Se añade al hashmap:
-                clFriends.put(friendName, clients.get(friendName));
+                clFriends.put(friendName, clientsShared.get(friendName));
                 //Aparte, se debe de notificar al cliente de la conexión de este usuario:
-                clients.get(friendName).notifyConnection(clientInfo);
+                clientsInternal.get(friendName).notifyConnection(clientInfo);
             }
         }
 
-        List<String> sentRequests = this.bdFacade.getFriendSentRequests(clientInfo.getClientName());
-        List<String> receivedRequests = this.bdFacade.getFriendRequests(clientInfo.getClientName());
+        List<String> sentRequests = this.bdFacade.getFriendSentRequests(clientName);
+        List<String> receivedRequests = this.bdFacade.getFriendRequests(clientName);
         //Toda la información obtenida se debe de pasar al usuario. Éste podrá inicializar todo ya:
-        clientInfo.setClientInfo(clFriends, sentRequests, receivedRequests);
+        clientInternal.setClientInfo(clFriends, sentRequests, receivedRequests);
     }
 
     private void notifyClientsOnDisconnect(String clientName) throws RemoteException{
@@ -244,9 +252,9 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
         List<String> friends = this.bdFacade.getFriendNames(clientName);
         for(String friendName : friends) {
             //Para cada amigo, si está en el hashmap principal (es decir, conectado), se enviará:
-            if(clients.containsKey(friendName)) {
+            if(clientsInternal.containsKey(friendName)) {
                 //notificación de la desconexión del usuario:
-                clients.get(friendName).notifyDisconnection(clientName);
+                clientsInternal.get(friendName).notifyDisconnection(clientName);
             }
         }
     }
