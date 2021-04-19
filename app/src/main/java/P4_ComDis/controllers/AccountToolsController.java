@@ -137,7 +137,7 @@ public class AccountToolsController implements Initializable{
                         Dialogs.showInfo("Información", "Usuario borrado correctamente", 
                                             "Saliendo de la aplicación.");
                         //Se sale (se habrá borrado):
-                        System.exit(1);
+                        System.exit(0);
                         break;
                     case UNAUTHORIZED:
                         Dialogs.showError("Error", "Error borrando usuario", 
