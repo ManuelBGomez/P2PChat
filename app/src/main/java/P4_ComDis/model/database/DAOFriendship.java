@@ -11,12 +11,26 @@ import P4_ComDis.model.dataClasses.ResultType;
 import P4_ComDis.model.dataClasses.User;
 import P4_ComDis.model.exceptions.DatabaseException;
 
+/**
+ * DAO de amistades - métodos relacionados con la gestión de las amistades.
+ * 
+ * @author Manuel Bendaña
+ */
 public final class DAOFriendship extends AbstractDAO{
 
+    /**
+     * Constructor de la clase.
+     * @param connection instancia del objeto de la conexión.
+     */
     public DAOFriendship(Connection connection) {
         super(connection);
     }
 
+    /** 
+     * Método que permite recuperar nombres de los amigos de un usuario dado.
+     * @param userName El nombre del usuario para el cual se quieren recuperar los amigos.
+     * @return List<String> la lista de amistades
+     */
     public List<String> getFriendNames(String userName) {
         //Usaremos varios preparedstatement para hacer la consulta:
         PreparedStatement stmFriendships = null;
@@ -70,6 +84,11 @@ public final class DAOFriendship extends AbstractDAO{
         return friends;
     }
 
+    /** 
+     * Método que permite recuperar todas las solicitudes de amistad del usuario con el nombre indicado.
+     * @param userName El nombre del usuario.
+     * @return List<String> Lista de nombres de usuarios que le han enviado solicitudes.
+     */
     public List<String> getFriendRequests(String userName){
         //Usaremos varios preparedstatement para hacer la consulta:
         PreparedStatement stmFriendships = null;
@@ -121,6 +140,11 @@ public final class DAOFriendship extends AbstractDAO{
         return friends;
     }
 
+    /** 
+     * Método que permite recuperar las amistades que ha enviado por el usuario.
+     * @param userName El nombre del usuario.
+     * @return List<String> Lista de nombres de usuarios a los que el especificado le ha enviado solicitudes.
+     */
     public List<String> getFriendSentRequests(String userName){
         //Usaremos varios preparedstatement para hacer la consulta:
         PreparedStatement stmFriendships = null;
@@ -172,6 +196,12 @@ public final class DAOFriendship extends AbstractDAO{
         return friends;
     }
 
+    /** 
+     * Método que permite a un usuario mandar una solicitud a otro.
+     * @param user Los datos del usuario
+     * @param friendName El nombre del amigo al que se le quiere enviar la solicitud.
+     * @throws DatabaseException Excepción ocurrida por algún problema en la base de datos.
+     */
     public void sendRequest(User user, String friendName) throws DatabaseException{
         //Usaremos varios preparedstatement para hacer la consulta de validación del usuario,
         //comprobar si la amistad existe y registrar la petición:
@@ -262,6 +292,12 @@ public final class DAOFriendship extends AbstractDAO{
         }
     }
 
+    /** 
+     * Método que permite formalizar la aceptación de una solicitud de amistad.
+     * @param user los datos del usuario.
+     * @param friendName El nombre del amigo al cual se le quiere aceptar la solicitud.
+     * @throws DatabaseException Excepción ocurrida por algún problema en la base de datos.
+     */
     public void acceptRequest(User user, String friendName) throws DatabaseException{
         //Usaremos varios preparedstatement para hacer la consulta de validación del usuario,
         //comprobar si la amistad existe y registrar la aceptación:
@@ -349,6 +385,12 @@ public final class DAOFriendship extends AbstractDAO{
         }
     }
 
+    /** 
+     * Método que permite formalizar el borrado de una amistad entre dos usuarios.
+     * @param user Los datos del usuario que quiere borrar la amistad.
+     * @param friendName El nombre del amigo con el que se quiere borrar la amistad.
+     * @throws DatabaseException Excepción ocurrida por algún problema en la base de datos.
+     */
     public void deleteFriendship(User user, String friendName) throws DatabaseException {
         //Usaremos varios preparedstatement para hacer la consulta de validación del usuario,
         //comprobar si la amistad existe y borrarla:
@@ -441,5 +483,4 @@ public final class DAOFriendship extends AbstractDAO{
             throw new DatabaseException(resultType, "Error intentando borrar la amistad");
         }
     }
-
 }

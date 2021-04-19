@@ -17,7 +17,6 @@ import P4_ComDis.aux.Dialogs;
 import P4_ComDis.model.dataClasses.Message;
 import P4_ComDis.model.dataClasses.ResultType;
 import P4_ComDis.model.dataClasses.User;
-import P4_ComDis.objectimpl.ClientManagementImpl;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -31,6 +30,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+/**
+ * Clase que representa al controlador principal
+ * 
+ * @author Manuel Bendaña
+ */
 public class MainPageController implements Initializable{
 
     //Atributos del fxml
@@ -64,6 +68,13 @@ public class MainPageController implements Initializable{
     //Lista de chats con todos los usuarios (almacén temporal de mensajes):
     private HashMap<String, List<Message>> messages;
 
+    
+    /** 
+     * Método ejecutado al inicializar la pantalla.
+     * 
+     * @param location url
+     * @param resources recursos
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         chatsInfo = new HashMap<>();
@@ -76,7 +87,16 @@ public class MainPageController implements Initializable{
         alertLabel.setVisible(false);
     }
 
-    public void setValues(Stage primaryStage, ClientManagementImpl clientInfo, User user, ChatManagementInterface cm) {
+    
+    /** 
+     * Método que permite pasar valores del controlador de acceso a este.
+     * 
+     * @param primaryStage la referencia a la stage mostrada en pantalla.
+     * @param clientInfo información de este mismo cliente
+     * @param user información del usuario (se tendrá que facilitar al servidor en cualquier solicitud que se haga).
+     * @param cm Interfaz del servidor, para poder comunicarnos desde aquí con ella.
+     */
+    public void setValues(Stage primaryStage, ClientManagementInterface clientInfo, User user, ChatManagementInterface cm) {
         //Se asocian los valores pertinentes:
         this.primaryStage = primaryStage;
         this.client = clientInfo;
@@ -101,6 +121,14 @@ public class MainPageController implements Initializable{
         });
     }
 
+    
+    /** 
+     * Método que nos permite establecer listas recibidas del servidor.
+     * 
+     * @param connectedClients lista de clientes amigos conectados actualmente.
+     * @param sentRequests lista de solicitudes de amistad recibidas.
+     * @param receivedRequests lista de solicitudes de amistad enviadas.
+     */
     public void setLists(HashMap<String, ClientManagementInterface> connectedClients,
                          List<String> sentRequests,
                          List<String> receivedRequests) {
@@ -131,6 +159,12 @@ public class MainPageController implements Initializable{
         }
     }
 
+    
+    /** 
+     * Método que permite actualizar la lista de amigos conectados debido a una conexión.
+     * 
+     * @param newConnection interfaz del cliente que se ha conectado.
+     */
     public void updateNewConnection(ClientManagementInterface newConnection){
         //Añadimos al hashmap:
         try {
@@ -151,6 +185,12 @@ public class MainPageController implements Initializable{
         }
     }
 
+    
+    /** 
+     * Método que permite actualizar la lista de amigos conectados debido a la desconexión de un cliente.
+     * 
+     * @param disconnected nombre del cliente amigo desconectado.
+     */
     public void updateNewDisconnect(String disconnected){
         //Se elimina el cliente que se desconecta:
         this.friendsConnected.remove(disconnected);
@@ -169,6 +209,12 @@ public class MainPageController implements Initializable{
         this.messages.remove(disconnected);
     }
 
+    
+    /** 
+     * Método que permite abrir un chat en la parte derecha de la ventana principal.
+     * 
+     * @param clientInt La interfaz cliente con la que nos comunicaremos a través de ese chat.
+     */
     public void putChatScreen(ClientManagementInterface clientInt) {
         try {
             //Asignamos ubicación:
@@ -191,6 +237,14 @@ public class MainPageController implements Initializable{
         }
     }
 
+    
+    /** 
+     * Método que permite cargar un mensaje recibido, almacenándolo localmente o mostrándolo en pantalla si 
+     * es necesario.
+     * 
+     * @param message el mensaje recibido.
+     * @throws RemoteException Excepción que puede ocurrir en la recuperación de información del cliente que manda el mensaje.
+     */
     public void loadRecievedMessage(Message message) throws RemoteException {
         //Añadimos el mensaje al hashmap:
         if(!this.messages.containsKey(message.getClientInt().getClientName())) {
@@ -221,6 +275,12 @@ public class MainPageController implements Initializable{
         }
     }
 
+    
+    /** 
+     * Método ejecutado en caso de pulsar el botón de las amistades, para abrir el chat de gestión de amistades.
+     * 
+     * @param event el evento de ratón que tuvo lugar.
+     */
     public void btnFriendsOnClick(MouseEvent event){
         try {
             //Si se pulsa este botón, abriremos la pantalla de amigos:
@@ -241,6 +301,12 @@ public class MainPageController implements Initializable{
         }
     }
 
+    
+    /** 
+     * Método ejecutado en caso de pulsar el botón de la gestión de la cuenta, para abrir la configuración.
+     * 
+     * @param event el evento de ratón que tuvo lugar.
+     */
     public void btnAccountOnClick(MouseEvent event){
         try {
             //Si se pulsa este botón, abriremos la pantalla de ajustes de la cuenta (borrar/cambiar password):
@@ -261,11 +327,25 @@ public class MainPageController implements Initializable{
         }
     }
 
+    
+    /** 
+     * Método que permite llevar a cabo una búsqueda de usuarios con el servidor.
+     * 
+     * @param pattern el patrón de búsqueda
+     * @return List<String> la lista de usuarios recibida.
+     * @throws RemoteException excepción remota que puede ocurrir en la comunicación con el servidor.
+     */
     public List<String> performSearch(String pattern) throws RemoteException{
         //Hacemos la búsqueda mediante llamada al servidor y devolvemos el resultado:
         return this.cm.searchFriends(this.user, pattern);
     }
 
+    
+    /** 
+     * Método que permite registrar una nueva solicitud de amistad recibida.
+     * 
+     * @param userName el nombre del usuario que la manda.
+     */
     public void updateNewRequest(String userName) {
         //Tomamos la lista de solicitudes y añadimos ésta:
         this.receivedRequests.add(userName);
@@ -276,6 +356,14 @@ public class MainPageController implements Initializable{
         }
     }
 
+    
+    /** 
+     * Método que permite gestionar una solicitud enviada a otro usuario a través del servidor.
+     * 
+     * @param userName el usuario destinatario.
+     * @return boolean si la solicitud se ha podido enviar correctamente o no (sólo nos interesa el booleano,
+     *  no el tipo de resultado como en otros casos).
+     */
     public boolean manageSendRequest(String userName) {
         //Enviamos la solicitud y devolvemos el resultado:
         try {
@@ -310,6 +398,13 @@ public class MainPageController implements Initializable{
         }
     }
 
+    
+    /** 
+     * Método que permite gestionar la confirmación de una solicitud recibida mediante el servidor. 
+     * 
+     * @param userName el usuario al cual se le confirma la solicitud.
+     * @return boolean si la solicitud se confirmó correctamente o no.
+     */
     public boolean manageConfirmation(String userName) {
         //Enviamos la solicitud de confirmación y analizamos el resultado:
         try {
@@ -344,6 +439,12 @@ public class MainPageController implements Initializable{
         }
     }
 
+    
+    /** 
+     * Método que permite borrar una solicitud de amistad enviada.
+     * 
+     * @param clientName el destinatario de la solicitud a eliminar.
+     */
     public void deleteSentRequest(String clientName) {
         //Se actualiza la lista de solicitudes enviadas:
         this.sentRequests.remove(clientName);
@@ -353,6 +454,13 @@ public class MainPageController implements Initializable{
         }
     }
 
+    
+    /** 
+     * Método que gestiona el rechazo de una solicitud de amistad.
+     * 
+     * @param userName el usuario al que se le rechaza la solicitud.
+     * @return boolean si la solicitud se pudo rechazar o no correctamente.
+     */
     public boolean rejectRequest(String userName) {
         //Se intenta llamar al método del servidor:
         try {
@@ -386,6 +494,13 @@ public class MainPageController implements Initializable{
         }
     }
 
+    
+    /** 
+     * Método que ppermite gestionar la cancelación de una solicitud de amistad por parte de un usuario.
+     * 
+     * @param userName el usuario al que se había enviado la solicitud.
+     * @return boolean si la solicitud se pudo cancelar o no.
+     */
     public boolean cancelRequest(String userName) {
         //Se intenta llamar al método correspondiente del servidor que permite cancelar la petición:
         try {
@@ -417,6 +532,12 @@ public class MainPageController implements Initializable{
         }
     }
 
+    
+    /** 
+     * Método que permite borrar una solicitud de amistad recibida
+     * 
+     * @param userName el usuario que había enviado la solicitud.
+     */
     public void deleteReceivedRequest(String userName) {
         //Se actualiza la lista de solicitudes recibidas:
         this.receivedRequests.remove(userName);
@@ -428,6 +549,15 @@ public class MainPageController implements Initializable{
         }
     }
 
+    
+    /** 
+     * Método que permite gestionar el cambio de la contraseña.
+     * 
+     * @param oldPass la contraseña antigua.
+     * @param newPass la contraseña nueva.
+     * @return ResultType el tipo de resultado a raíz del cambio de contraseña.
+     * @throws RemoteException excepción remota lanzada en caso de problemas en la comunicación con el servidor.
+     */
     public ResultType changePassword(String oldPass, String newPass) throws RemoteException {
         //Se crea un objeto usuario específico con el nuevo usuario:
         User user = new User(this.user.getUsername(), oldPass);
@@ -440,10 +570,23 @@ public class MainPageController implements Initializable{
         return rt;
     }
 
+    
+    /** 
+     * Método que permite gestionar el borrado de una cuenta.
+     * 
+     * @return ResultType el resultado del borrado.
+     * @throws RemoteException excepción remota lanzada en caaso de problemas en la comunicación con el servidor.
+     */
     public ResultType deleteAccount() throws RemoteException {
         return cm.unregister(this.user);
     }
 
+    
+    /** 
+     * Método que permite gestionar el borrado de una amistad.
+     * 
+     * @param friendName el amigo con el que se borra la amistad definitiva.
+     */
     public void deleteFriendship(String friendName) {
         //Se intenta borrar la amistad:
         try {
@@ -474,6 +617,13 @@ public class MainPageController implements Initializable{
         }
     }
 
+    
+    /** 
+     * Método que permite añadir un mensaje nuevo al hashmap:
+     * 
+     * @param user el nombre del usuario que lo envía
+     * @param message el mensaje enviado
+     */
     public void addMessage(String user, Message message) {
         //Añadimos el mensaje al hashmap:
         if(!this.messages.containsKey(user)) {
@@ -484,6 +634,10 @@ public class MainPageController implements Initializable{
         this.messages.get(user).add(message);
     }
 
+    /**
+     * Método que permite gestionar la aparición de una alerta en pantalla en caso de existir solicitudes
+     * de amistad sin gestionar.
+     */
     private void checkAlert(){
         //Si hay solicitudes, se activa la etiqueta con el aviso:
         if(!this.receivedRequests.isEmpty()){

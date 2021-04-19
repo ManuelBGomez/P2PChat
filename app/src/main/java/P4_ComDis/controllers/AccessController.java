@@ -25,6 +25,11 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.scene.control.Label;
 
+/**
+ * Controlador de la pantalla de acceso.
+ * 
+ * @author Manuel Bendaña
+ */
 public class AccessController implements Initializable {
 
     //Atributos públicos: elementos de la interfaz.
@@ -41,6 +46,12 @@ public class AccessController implements Initializable {
     private ClientManagementImpl cImpl;
     private ChatManagementInterface cmInt;
 
+    
+    /** 
+     * Método ejecutado nada más iniciar la pantalla.
+     * @param location url
+     * @param resources recursos
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         //Listeners para los campos de texto, para permitir activar/desactivar botones:
@@ -88,14 +99,29 @@ public class AccessController implements Initializable {
         }
     }
 
+    
+    /**
+     * Método que permite recuperar la primaryStage en la que se ejecuta la aplicación gráfica. 
+     * @return Stage la stage almacenada.
+     */
     public Stage getPrimaryStage() {
         return primaryStage;
     }
 
+    
+    /** 
+     * Método que permite modificar la primaryStage.
+     * @param primaryStage La stage a asignar.
+     */
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
     }
     
+    
+    /** 
+     * Método ejecutado al pulsar el botón que permite formalizar el inicio de sesión.
+     * @param event el evento que tiene lugar.
+     */
     public void btnLoginOnClick(ActionEvent event){
         //Se hace el inicio de sesión, haciendo la petición al servidor:
         //Creamos el usuario a pasar al servidor:
@@ -145,6 +171,11 @@ public class AccessController implements Initializable {
         
     }
 
+    
+    /** 
+     * Método ejecutado al pulsar en el botón que permite el registro.
+     * @param event El evento que tiene lugar.
+     */
     public void btnRegisterOnClick(ActionEvent event){
         //Se hace el registro, haciendo la petición al servidor:
         //Creamos el usuario a pasar al servidor:

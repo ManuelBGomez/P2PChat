@@ -1,16 +1,19 @@
 package P4_ComDis.controllers;
 
 import java.net.URL;
-import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
-import P4_ComDis.ClientManagementInterface;
 import P4_ComDis.model.dataClasses.Message;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
+/**
+ * Controlador que representa cada uno de los mensajes que se envían en un chat.
+ * 
+ * @author Manuel Bendaña
+ */
 public class MessageContainerController implements Initializable{
 
     public VBox messagePane;
@@ -18,12 +21,24 @@ public class MessageContainerController implements Initializable{
     public Label messageContent;
     public Label time;
 
+    
+    /** 
+     * Método ejecutado al iniciar la interfaz correspondiente.
+     * 
+     * @param location url
+     * @param resources recursos
+     */
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void initialize(URL location, ResourceBundle resources) { }
 
-    }
-
-    public void loadMessage(Message message, ClientManagementInterface clientInt, boolean send) throws RemoteException{
+    
+    /** 
+     * Método que permite cargar un mensaje para ser visualizado.
+     * 
+     * @param message El contenido del mensaje
+     * @param send Si es enviado o recibido. Dependiendo de ello aparecerá en un lado u otro.
+     */
+    public void loadMessage(Message message, boolean send) {
         //Llenamos los campos de texto:
         this.messageContent.setText(message.getMessageContent());
         this.time.setText(message.getDate());

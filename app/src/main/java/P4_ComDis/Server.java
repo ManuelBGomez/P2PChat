@@ -8,7 +8,16 @@ import java.rmi.registry.Registry;
 
 import P4_ComDis.objectimpl.ChatManagementImpl;
 
+/**
+ * Clase main del servidor
+ * @author Manuel Bendaña
+ */
 public class Server {
+    
+    /** 
+     * Método main
+     * @param args Argumentos de entrada
+     */
     public static void main(String[] args) {
         try {
             //Tratamos de iniciar un registro en el puerto que corresponde (usaremos siempre el que hay por defecto):
@@ -24,6 +33,11 @@ public class Server {
         }
     }
 
+    
+    /**
+     * Método que permite iniciar el registro RMI o recuperarlo: 
+     * @throws RemoteException
+     */
     private static void startRegistry() throws RemoteException{
         try {
             //Tratamos de recuperar un registro de java RMI en el puerto 1099:

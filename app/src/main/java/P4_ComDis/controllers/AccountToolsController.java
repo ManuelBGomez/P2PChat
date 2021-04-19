@@ -13,7 +13,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 
-
+/**
+ * Controlador de la pantalla de gestión de la cuenta.
+ * 
+ * @author Manuel Bendaña
+ */
 public class AccountToolsController implements Initializable{
 
     //Atributos públicos (interfaz):
@@ -26,6 +30,13 @@ public class AccountToolsController implements Initializable{
     //Referencia al controlador principal:
     private MainPageController controllerPrincipal;
 
+    
+    /** 
+     * Método ejecutado nada más inicializar la pantalla
+     * 
+     * @param location url
+     * @param resources recursos
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         //Botón de cambio de contraseña por defecto deshabilitado:
@@ -50,10 +61,22 @@ public class AccountToolsController implements Initializable{
         textConfPass.textProperty().addListener(listText);
     }
 
+    
+    /** 
+     * Método que permite pasar valores a este controlador:
+     * 
+     * @param mainPageController Controlador de la pantalla principal para gestionarlo desde aquí.
+     */
     public void setValues(MainPageController mainPageController) {
         this.controllerPrincipal = mainPageController;
     }
 
+    
+    /** 
+     * Método que se ejecuta al pulsar el botón de cambio de contraseña.
+     * 
+     * @param event El evento que tiene lugar.
+     */
     public void btnChangePassOnClick(ActionEvent event){
         //Se comprueba si las contraseñas son iguales:
         if(textNewPass.getText().equals(textConfPass.getText())){
@@ -92,6 +115,12 @@ public class AccountToolsController implements Initializable{
         }
     }
 
+    
+    /** 
+     * Método que se ejecuta al pulsar el botón de borrado de la cuenta.
+     * 
+     * @param event El evento que tiene lugar.
+     */
     public void btnDelAccountOnClick(ActionEvent event){
         Boolean result = Dialogs.showConfirmation("Confirmación borrado", 
                                                                 "¿Estás seguro que deseas borrar la cuenta?", "");

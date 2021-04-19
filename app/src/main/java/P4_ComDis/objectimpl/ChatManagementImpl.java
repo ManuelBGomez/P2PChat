@@ -13,6 +13,10 @@ import P4_ComDis.model.dataClasses.User;
 import P4_ComDis.model.database.BDFacade;
 import P4_ComDis.model.exceptions.DatabaseException;
 
+/**
+ * Clase que implementa la interfaz servidor. Se implementan todos los métodos necesarios para comunicarse con el cliente.
+ * @author Manuel Bendaña
+ */
 public class ChatManagementImpl extends UnicastRemoteObject implements ChatManagementInterface {
 
     //Atributo: la lista de clientes conectados:
@@ -21,6 +25,10 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
     //Referencia a la fachada de la base de datos:
     private BDFacade bdFacade;
 
+    /**
+     * Constructor de la clase
+     * @throws RemoteException Excepción lanzada en caso de existir algún problema.
+     */
     public ChatManagementImpl() throws RemoteException {
         super();
         this.bdFacade = new BDFacade();
@@ -28,6 +36,16 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
         this.clientsInternal = new HashMap<>();
     }
     
+    /** 
+     * Método que permite loguearse en el servidor de chat. Sólo será posible el logueo si el usuario está registrado
+     * y, además, no se encuentra logueado en este momento.
+     * 
+     * @param user Datos del usuario que quiere iniciar sesión.
+     * @param clientInfo Interfaz del cliente que se puede compartir con otros clientes (para la comunicación p2p)
+     * @param clientInternal Interfaz del cliente interna: para ser usada unicamente desde el propio servidor.
+     * @return ResultType - el resultado de la operación: si todo va bien será OK, si no, será un tipo representativo del error.
+     * @throws RemoteException Excepción remota que puede ocurrir durante la ejecución del método.
+     */
     @Override
     public ResultType loginToChat(User user, ClientManagementInterface clientInfo, ClientInternalMgInterface clientInternal) 
         throws RemoteException {
@@ -47,6 +65,12 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
         }
     }
 
+    
+    /** 
+     * Método que permite a un usuario salir del sistema.
+     * @param user Los datos del usuario que se quiere desloguear.
+     * @throws RemoteException Excepción remota que puede ocurrir durante la ejecución del método.
+     */
     @Override
     public void logoutFromChat(User user) throws RemoteException {
         //Se intenta hacer el logout:
@@ -70,6 +94,17 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
         }
     }
 
+    
+    /** 
+     * Método que permite a un usuario registrarse en el servidor de chat con una cuenta nueva. Sólo se permitirá
+     * registro de usuarios con un nombre único. Si la ejecución es correcta, el usuario quedará logueado en la aplicación.
+     * 
+     * @param user Los datos del nuevo usuario.
+     * @param clientInfo La interfaz de ese cliente, que se permitirá compartir con otros.
+     * @param clientInternal La interfaz del cliente interna, que usará solo el servidor.
+     * @return ResultType el resultado de la operación en forma de enum.
+     * @throws RemoteException Excepción remota que puede ocurrir durante la ejecución del método.
+     */
     @Override
     public ResultType registerInChat(User user, ClientManagementInterface clientInfo, ClientInternalMgInterface clientInternal) throws RemoteException {
         //Trataremos de registrar al usuario:
@@ -89,12 +124,31 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
         }
     }
 
+    
+    /** 
+     * Método que permite al usuario especificado hacer búsqueda de usuarios que podrían ser potenciales amigos en base
+     * a un patrón específico.
+     * 
+     * @param user El usuario que desea hacer la búsqueda. Si sus datos no son válidos, no se devolverá resultado.
+     * @param pattern El patrón de búsqueda (nombre completo o parte)
+     * @return List<String> resultado de la búsqueda, en caso de que pudiera ser hecha.
+     * @throws RemoteException Excepción remota que puede ocurrir durante la ejecución del método.
+     */
     @Override
     public List<String> searchFriends(User user, String pattern) throws RemoteException {
         //Se llama al método de la DB y se devuelve el resultado. Si el usuario no fuese válido ya no se devolvería nada:
         return bdFacade.getUserNamesByPattern(user, pattern);
     }
 
+    
+    /** 
+     * Método que permite reflejar el envío de una solicitud de amistad a un usuario.
+     * 
+     * @param user El usuario que desea hacer la solicitud.
+     * @param friendName La persona con la que quiere entablar la amistad.
+     * @return ResultType resultado de la operación.
+     * @throws RemoteException Excepción remota que puede ocurrir durante la ejecución del método.
+     */
     @Override
     public ResultType sendFriendRequest(User user, String friendName) throws RemoteException {
         try {
@@ -112,6 +166,15 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
         }
     }
 
+    
+    /** 
+     * Método que permite reflejar la aceptación de la solicitud de amistad por parte de un usuario.
+     * 
+     * @param user El usuario que desea aceptar la solicitud.
+     * @param friendName El nombre del amigo del que recibió la solicitud.
+     * @return ResultType el resultado de la operación.
+     * @throws RemoteException Excepción remota que puede ocurrir durante la ejecución del método.
+     */
     @Override
     public ResultType acceptRequest(User user, String friendName) throws RemoteException {
         try {
@@ -133,6 +196,15 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
         }
     }
 
+    
+    /** 
+     * Método que permite rechazar la solicitud de amistad por parte de un usuario.
+     * 
+     * @param user El usuario que desea rechazar la solicitud.
+     * @param friendName El nombre del amigo del que recibió la solicitud.
+     * @return ResultType el resultado de la operación.
+     * @throws RemoteException Excepción remota que puede ocurrir durante la ejecución del método.
+     */
     @Override
     public ResultType rejectFriendship(User user, String friendName) throws RemoteException {
         try{
@@ -150,6 +222,16 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
         }
     }
 
+    
+    /** 
+     * Método que permite formalizar la cancelación de una solicitud de amistad enviada por un usuario
+     * determinado.
+     * 
+     * @param user El usuario que desea cancelar la solicitud.
+     * @param friendName El nombre del amigo al que se envió la solicitud.
+     * @return ResultType el resultado de la operación.
+     * @throws RemoteException Excepción remota que puede ocurrir durante la ejecución del método.
+     */
     @Override
     public ResultType cancelRequest(User user, String friendName) throws RemoteException {
         try{
@@ -167,6 +249,15 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
         }
     }
 
+    
+    /** 
+     * Método que permite borrar una amistad entre dos usuarios, independientemente de su situación.
+     * 
+     * @param user El usuario que desea borrar la amistad.
+     * @param friendName El nombre del amigo.
+     * @return ResultType el resultado de la operación
+     * @throws RemoteException Excepción remota que puede ocurrir durante la ejecución del método.
+     */
     @Override
     public ResultType deleteFriendship(User user, String friendName) throws RemoteException {
         try {
@@ -185,6 +276,15 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
         }
     }
 
+    
+    /** 
+     * Método que permite formalizar el cambio de contraseña por parte de un usuario.
+     * 
+     * @param user Los datos del usuario ACTUALES.
+     * @param newPass La nueva contraseña
+     * @return ResultType el resultado de la operación.
+     * @throws RemoteException Excepción remota que puede ocurrir durante la ejecución del método.
+     */
     @Override
     public ResultType changePassword(User user, String newPass) throws RemoteException {
         try {
@@ -196,7 +296,14 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
             return ex.getResultType();
         }
     }
-
+    
+    /** 
+     * Método que permite borrar la cuenta de un usuario.
+     * 
+     * @param user Los datos del usuario que se quiere borrar.
+     * @return ResultType resultado de la operación.
+     * @throws RemoteException Excepción remota que puede ocurrir durante la ejecución del método.
+     */
     @Override
     public ResultType unregister(User user) throws RemoteException {
         try{
@@ -222,6 +329,15 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
         }
     }
 
+    
+    /** 
+     * Método que permite notificar a los amigos de un cliente la conexión del mismo.
+     * 
+     * @param clientName El nombre del cliente.
+     * @param clientInfo La interfaz que se comparte del cliente a los amigos.
+     * @param clientInternal La interfaz interna del cliente, para que el servidor envíe la notificación.
+     * @throws RemoteException Excepción remota que puede ocurrir en la ejecución del método.
+     */
     private void notifyClientsOnConnect(String clientName, ClientManagementInterface clientInfo,
         ClientInternalMgInterface clientInternal) throws RemoteException{
         //Se debe enviar al cliente que corresponde el listado completo de sus amigos y, además, enviar
@@ -246,6 +362,13 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
         clientInternal.setClientInfo(clFriends, sentRequests, receivedRequests);
     }
 
+    
+    /** 
+     * Método que permite notificar a los amigos de un cliente de su desconexión.
+     * 
+     * @param clientName El nombre del cliente que se desconecta.
+     * @throws RemoteException Excepción remota que puede ocurrir durante la ejecución del método.
+     */
     private void notifyClientsOnDisconnect(String clientName) throws RemoteException{
         //Se notificará a los amigos del cliente cuando este se desconecte, para que puedana actualizar su
         //lista de contactos activa.

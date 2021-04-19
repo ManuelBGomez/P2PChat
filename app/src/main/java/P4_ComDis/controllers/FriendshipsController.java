@@ -18,6 +18,11 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 
+/**
+ * Controlador de la pantalla de gestión de las amistades y las solicitudes.
+ * 
+ * @author Manuel Bendaña
+ */
 public class FriendshipsController implements Initializable{
 
     //Atributos públicos en representación de elementos de la interfaz:
@@ -34,11 +39,24 @@ public class FriendshipsController implements Initializable{
     private HashMap<String, Node> receivedList;
     private HashMap<String, Node> sentList;
 
+    
+    /** 
+     * Método ejecutado al iniciar la pantalla correspondiente.
+     * 
+     * @param location url
+     * @param resources recursos
+     */
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        
-    }
+    public void initialize(URL location, ResourceBundle resources) { }
 
+    
+    /** 
+     * Método que permite pasarle valores a este controlador.
+     * 
+     * @param controllerPrincipal referencia del controlador principal.
+     * @param sentRequests Lista de solicitudes enviadas, para cargarlas.
+     * @param receivedRequests Lista de solicitudes recibidas, para cargarlas.
+     */
     public void setValues(MainPageController controllerPrincipal, List<String> sentRequests, List<String> receivedRequests){
         this.controllerPrincipal = controllerPrincipal;
         usersSentList.getChildren().clear();
@@ -75,16 +93,31 @@ public class FriendshipsController implements Initializable{
         }
     }
 
+    
+    /** 
+     * Método ejecutado en caso de pulsar una tecla en el cuadro de texto de búsqueda de amistades.
+     * 
+     * @param ke El evento de teclado que tiene lugar.
+     */
     public void onEnter(KeyEvent ke) {
         if (ke.getCode().equals(KeyCode.ENTER)) {
             requestSearch();
         }
     }
 
+    
+    /** 
+     * Método ejecutado en caso de pulsar el botón de búsqueda.
+     * 
+     * @param event El evento de ratón que tiene lugar.
+     */
     public void btnSearchOnClick(MouseEvent event){
         requestSearch();
     }
 
+    /**
+     * Método encargado de gestionar la búsqueda de personas no amigas a partir de los términos especificados.
+     */
     private void requestSearch(){
         //Comprobamos que la búsqueda tenga una longitud mínima:
         if(searchText.getText().length() >= 4){
@@ -112,6 +145,12 @@ public class FriendshipsController implements Initializable{
         }
     }
 
+    
+    /** 
+     * Método que permite añadir una solicitud de amistad recibida del servidor.
+     * 
+     * @param userName El usuario que la envía.
+     */
     public void addRequest(String userName) {
         //Se crea el nuevo elemento de interfaz:
         try {
@@ -126,6 +165,12 @@ public class FriendshipsController implements Initializable{
         }
     }
     
+    
+    /** 
+     * Método que permite añadir una solicitud de amistad que este usuario ha decidido enviar.
+     * 
+     * @param userName el nombre del destinatario
+     */
     public void addSent(String userName) {
         //Se crea el nuevo elemento de interfaz:
         try {
@@ -140,6 +185,12 @@ public class FriendshipsController implements Initializable{
         }
     }
 
+    
+    /** 
+     * Método que permite gestionar el envio de una solicitud de amistad.
+     * 
+     * @param userName el destinatario de la solicitud.
+     */
     public void manageSendRequest(String userName) {
         //Llamamos al controlador principal para que gestione esta llamada:
         if(this.controllerPrincipal.manageSendRequest(userName)){
@@ -150,6 +201,12 @@ public class FriendshipsController implements Initializable{
         }
     }
 
+    
+    /** 
+     * Método que permite gestionar la confirmación de una solicitud de amistad.
+     * 
+     * @param userName el usuario que envió la solicitud.
+     */
     public void manageConfirmation(String userName) {
         //Llamamos al controlador principal para la gestión de la llamada:
         if(this.controllerPrincipal.manageConfirmation(userName)){
@@ -160,6 +217,12 @@ public class FriendshipsController implements Initializable{
         }
     }
 
+    
+    /** 
+     * Método que permite gestionar el borrado de una solicitud creada por este propio usuario.
+     * 
+     * @param clientName el destinatario de la solicitud enviada que se quiere eliminar.
+     */
     public void removeSentReq(String clientName) {
         //Eliminamos la solicitud:
         usersSentList.getChildren().remove(sentList.get(clientName));
@@ -167,6 +230,12 @@ public class FriendshipsController implements Initializable{
         sentList.remove(clientName);
     }
 
+    
+    /** 
+     * Método que permite borrar una solicitud recibida debido a una cancelación.
+     * 
+     * @param userName El usuario que había enviado la solicitud.
+     */
     public void removeRecReq(String userName) {
         //Eliminamos la solicitud:
         usersReceivedList.getChildren().remove(receivedList.get(userName));
@@ -174,6 +243,13 @@ public class FriendshipsController implements Initializable{
         receivedList.remove(userName);
     }
     
+    
+    /** 
+     * Método que permite gestionar el rechazo de una solicitud.
+     * 
+     * @param userName El usuario al que se le rechaza
+     * @param rType El tipo de rechazo hecho (solicitud recibida o enviada -que se cancela-)
+     */
     public void manageRejection(String userName, FriendRequestType rType) {
         //En función del tipo se llamará a un método adecuado.
         switch(rType){

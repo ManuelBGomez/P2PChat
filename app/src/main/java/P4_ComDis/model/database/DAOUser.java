@@ -11,12 +11,27 @@ import P4_ComDis.model.dataClasses.ResultType;
 import P4_ComDis.model.dataClasses.User;
 import P4_ComDis.model.exceptions.DatabaseException;
 
+/**
+ * DAO de usuarios - métodos relacionados con la gestión de usuarios,
+ * 
+ * @author Manuel Bendaña
+ */
 public final class DAOUser extends AbstractDAO {
 
+    /**
+     * Constructor de la clase.
+     * @param connection instancia del objeto de la conexión.
+     */
     public DAOUser(Connection connection) {
         super(connection);
     }
 
+    /** 
+     * Método que le permite a un usuario iniciar sesión.
+     * 
+     * @param user datos del usuario
+     * @throws DatabaseException Excepción ocurrida por algún problema en la base de datos.
+     */
     public void login(User user) throws DatabaseException {
         //Usaremos varios preparedstatement para hacer la consulta y efectuar el login:
         PreparedStatement stmUsers = null;
@@ -100,6 +115,11 @@ public final class DAOUser extends AbstractDAO {
         }
     }
     
+    /** 
+     * Método que le permite a un usuario cerrar sesión.
+     * @param user datos del usuario.
+     * @throws DatabaseException Excepción ocurrida por algún problema en la base de datos.
+     */
     public void logout(User user) throws DatabaseException {
         //Usaremos varios preparedstatement para hacer la consulta y efectuar el logout:
         PreparedStatement stmUsers = null;
@@ -158,6 +178,11 @@ public final class DAOUser extends AbstractDAO {
         }
     }
 
+    /**
+     * Método que permite formalizar el registro de un usuario.
+     * @param user los datos del usuario que se quiere registrar.
+     * @throws DatabaseException Excepción ocurrida por algún problema en la base de datos.
+     */
     public void register(User user) throws DatabaseException {
         //Usaremos varios preparedstatement para la consulta:
         PreparedStatement stmUsers = null;
@@ -222,6 +247,12 @@ public final class DAOUser extends AbstractDAO {
         }
     }
 
+    /** 
+     * Método que permite a un usuario recuperar nombres de usuarios (no amigos del solicitante) en base a un patrón.
+     * @param user Los datos del usuario.
+     * @param pattern Patrón a partir del cual se quieren recuperar los nombres
+     * @return List<String> Lista de usuarios no amigos del solicitante cuyos nombres coinciden con el patrón
+     */
     public List<String> getUserNamesByPattern(User user, String pattern) {
         //Usaremos varios preparedstatement para hacer la consulta de validación del usuario y hacer logout:
         PreparedStatement stmUsers = null;
@@ -293,6 +324,12 @@ public final class DAOUser extends AbstractDAO {
         return users;
     }
 
+    /** 
+     * Método que permite cambiar la contraseña al usuario especificado.
+     * @param user Los datos del usuario.
+     * @param newPass La nueva contraseña a modificar.
+     * @throws DatabaseException Excepción ocurrida por algún problema en la base de datos.
+     */
     public void changePassword(User user, String newPass) throws DatabaseException {
         //Usaremos varios preparedstatement para hacer la consulta y efectuar el cambio de contraseña:
         PreparedStatement stmUsers = null;
@@ -351,6 +388,11 @@ public final class DAOUser extends AbstractDAO {
         }
     }
 
+    /** 
+     * Método que le permite al usuario derregistrarse (eliminar su cuenta).
+     * @param user Los datos del usuario.
+     * @throws DatabaseException Excepción ocurrida por algún problema en la base de datos.
+     */
     public void unregister(User user) throws DatabaseException {
         //Usaremos varios preparedstatement para hacer la consulta y efectuar el borrado:
         PreparedStatement stmUsers = null;

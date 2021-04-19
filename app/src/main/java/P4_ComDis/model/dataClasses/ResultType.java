@@ -1,5 +1,8 @@
 package P4_ComDis.model.dataClasses;
 
+/**
+ * Enumerado que representa el tipo de resultado que se puede devolver
+ */
 public enum ResultType {
     OK,
     UNAUTHORIZED,

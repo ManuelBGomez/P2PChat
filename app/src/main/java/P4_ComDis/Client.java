@@ -8,6 +8,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+/**
+ * Clase desde la que se inicia la aplicación JavaFX en el cliente.
+ * 
+ * @author Manuel Bendaña
+ */
 public class Client extends Application{
     /** 
      * Método ejecutado para iniciar la carga de la interface gráfica.

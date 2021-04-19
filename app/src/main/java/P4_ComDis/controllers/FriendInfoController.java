@@ -9,6 +9,12 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 
+/**
+ * Controlador del objeto que representa información de algún amigo. Se trata del contenedor que se mostrará 
+ * cuando se quiere añadir/confirmar/cancelar una solicitud de amistad.
+ * 
+ * @author Manuel Bendaña
+ */
 public class FriendInfoController implements Initializable{
 
     public Label userName;
@@ -21,11 +27,24 @@ public class FriendInfoController implements Initializable{
     //Referencia al controlador padre:
     private FriendshipsController controllerFriendships;
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        
-    }
     
+    /**
+     * Método ejecutado al iniciar la interfaz.
+     *  
+     * @param location url
+     * @param resources recursos
+     */
+    @Override
+    public void initialize(URL location, ResourceBundle resources) { }
+    
+    
+    /** 
+     * Método que permite pasar valores a esta parte de la interfaz.
+     * 
+     * @param userName el nombre del usuario.
+     * @param rType el tipo de solicitud que se hace (hay tres tipos definidos en un enum).
+     * @param controllerFriendships Referencia al controlador de la pantalla de amistades (el padre).
+     */
     public void setValues(String userName, FriendRequestType rType, FriendshipsController controllerFriendships){
         this.userName.setText(userName);
         this.rType = rType;
@@ -52,16 +71,34 @@ public class FriendInfoController implements Initializable{
         this.controllerFriendships = controllerFriendships;
     }
 
+    
+    /** 
+     * Método ejecutado al pulsar el botón de añadir un amigo.
+     * 
+     * @param event El evento de ratón que tiene lugar.
+     */
     public void btnAddOnClick(MouseEvent event) {
         //Llamaremos al controlador padre para gestionar la llamada:
         controllerFriendships.manageSendRequest(userName.getText());
     }
     
+    
+    /** 
+     * Método ejecutado al pulsar el botón de confirmación de una amistad.
+     * 
+     * @param event El evento de ratón que tiene lugar.
+     */
     public void btnConfOnClick(MouseEvent event) {
         //Llamaremos al controlador padre para gestionar la llamada:
         controllerFriendships.manageConfirmation(userName.getText());
     }
 
+    
+    /** 
+     * Método ejecutado al pulsar el botón de rechazo de una amistad.
+     * 
+     * @param event El evento de ratón que tiene lugar.
+     */
     public void btnRecOnClick(MouseEvent event) {
         controllerFriendships.manageRejection(userName.getText(), this.rType);
     }
