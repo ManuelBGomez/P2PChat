@@ -16,4 +16,4 @@ CREATE TABLE friendship(
     PRIMARY KEY(userSender, userReceiver)
 );
 
-INSERT INTO user(userName, password) VALUES ('manu', sha2('21012000', 256));
+INSERT INTO user(userName, password) VALUES ('manu', sha2('abc123..', 256));

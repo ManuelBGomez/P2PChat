@@ -14,9 +14,13 @@ import P4_ComDis.ClientManagementInterface;
  */
 public class Message implements Serializable{
     //Atributos
+    //Contenido del mensaje
     private final String messageContent;
+    //Fecha ya formateada como un string
     private final String date;
+    //Nombre del usuario que envía el mensaje
     private final String userName;
+    //Interfaz del usuario
     private final ClientManagementInterface clientInt;
 
     /**
