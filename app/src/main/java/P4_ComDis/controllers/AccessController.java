@@ -22,6 +22,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.stage.Stage;
 import javafx.scene.control.Label;
 
@@ -72,6 +73,13 @@ public class AccessController implements Initializable {
         };
 
         userName.textProperty().addListener(listText);
+        //Evitamos espacios en blanco en la búsqueda:
+        userName.setTextFormatter(new TextFormatter<>(change->{
+            if (change.getText().equals(" ")) {
+                change.setText("");
+            }
+            return change;
+        }));
         password.textProperty().addListener(listText);
 
         //Creamos ya de antemano la siguiente escena que se mostrará:

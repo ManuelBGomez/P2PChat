@@ -322,6 +322,7 @@ public class ChatManagementImpl extends UnicastRemoteObject implements ChatManag
             //Se elimina de los hashmap el usuario:
             clientsInternal.remove(user.getUsername());
             clientsShared.remove(user.getUsername());
+            System.out.println("Cliente " + user.getUsername() + " eliminado");
             //Se devuelve un estado ok:
             return ResultType.OK;
         } catch (DatabaseException e) {
